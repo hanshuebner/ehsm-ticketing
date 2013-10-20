@@ -1,0 +1,9 @@
+2013-10-20 21:57:18,226 [INFO] : [c6d2] Starting :get / for 0:0:0:0:0:0:0:1
+2013-10-20 21:57:18,241 [INFO] : [c6d2]  \ - - - -  Params: {}
+2013-10-20 21:57:18,243 [INFO] : [c6d2] Finished :get / for 0:0:0:0:0:0:0:1 in (17 ms) Status: ???
+2013-10-20 21:57:18,490 [INFO] : [1f71] Starting :get /favicon.ico for 0:0:0:0:0:0:0:1
+2013-10-20 21:57:18,490 [INFO] : [1f71]  \ - - - -  Params: {}
+2013-10-20 21:57:18,491 [INFO] : [1f71] Finished :get /favicon.ico for 0:0:0:0:0:0:0:1 in (1 ms) Status: ???
+2013-10-20 21:57:50,237 [INFO] : [37a6] Starting :get /paymill-callback for 0:0:0:0:0:0:0:1
+2013-10-20 21:57:50,238 [INFO] : [37a6]  \ - - - -  Params: {}
+2013-10-20 21:57:50,262 [INFO] : [37a6] Finished :get /paymill-callback for 0:0:0:0:0:0:0:1 in (25 ms) Status: 200
