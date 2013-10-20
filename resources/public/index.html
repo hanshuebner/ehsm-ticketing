@@ -1,0 +1,23 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Buy EHSM ticket</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  </head>
+  <body>
+    <form action="pay" method="POST">
+      <script src="https://button.paymill.com/v1/"
+              id="button"
+              data-label="Pay with CreditCard"
+              data-title="Buy our product"
+              data-description="It's a great product"
+              data-submit-button="Pay 2.50 EUR"
+              data-amount="250"
+              data-currency="EUR"
+              data-public-key="8585298099281237d892403846aedaf0"
+              data-elv="true" // Only for ELV payments
+              data-lang="de-DE">
+      </script>
+    </form>
+  </body>
+</html>

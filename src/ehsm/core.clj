@@ -13,19 +13,30 @@
 (defonce default-port 7676)
 
 (defn paymill-callback [req]
-  (println req)
+  (println "PAYMILL-CALLBACK" req)
   {:status 200
    :body "ok"})
 
+(defn pay [req]
+  (println "PAY token" (:paymillToken (:params req)))
+  {:status 200
+   :body "ok"})
+
+(defn not-found [req]
+  {:status 404
+   :body "Not found."})
+
 (defroutes all-routes
-  (GET "/paymill-callback" [] paymill-callback))
+  (GET "/paymill-callback" [] paymill-callback)
+  (POST "/pay" [] pay)
+  (route/not-found not-found))
 
 (defn app []
   (-> all-routes
       (ring-logger/wrap-with-plaintext-logger)
+      (ring-resource/wrap-resource "public")
       (ring-json/wrap-json-body {:keywords? true})
       (ring-json/wrap-json-response)
-      (ring-resource/wrap-resource "public")
       (ring-session/wrap-session)
       (handler/site)))
 
@@ -44,5 +55,4 @@
                                             {:port (or port default-port)})))
 
 (defn -main [& args]
-  ;; work around dangerous default behaviour in Clojure
   (start-server))
