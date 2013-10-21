@@ -13,7 +13,7 @@
 (defonce default-port 7676)
 
 (defn paymill-callback [req]
-  (println "PAYMILL-CALLBACK" req)
+  (println "PAYMILL-CALLBACK" (:body req))
   {:status 200
    :body "ok"})
 
