@@ -27,7 +27,7 @@
    :body "Not found."})
 
 (defroutes all-routes
-  (GET "/paymill-callback" [] paymill-callback)
+  (POST "/paymill-callback" [] paymill-callback)
   (POST "/pay" [] pay)
   (route/not-found not-found))
 
