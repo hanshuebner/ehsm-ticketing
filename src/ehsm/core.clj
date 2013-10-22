@@ -7,6 +7,7 @@
             [ring.middleware.logger :as ring-logger]
             [ring.middleware.resource :as ring-resource]
             [ring.middleware.session :as ring-session]
+            [ring.middleware.file-info :as ring-file-info]
             [clj-paymill.net :as paymill-net]
             [clj-paymill.client :as paymill-client]))
 
@@ -89,6 +90,7 @@
   (-> all-routes
       (ring-logger/wrap-with-plaintext-logger)
       (ring-resource/wrap-resource "public")
+      (ring-file-info/wrap-file-info)
       (ring-json/wrap-json-body {:keywords? true})
       (ring-json/wrap-json-response)
       (ring-session/wrap-session)
