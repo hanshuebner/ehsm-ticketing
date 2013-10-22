@@ -1,38 +1,53 @@
 <!DOCTYPE html>
-<html>
+<html ng-app>
   <head>
     <meta charset="utf-8"/>
     <title>Buy EHSM ticket</title>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+    <script src="/js/jquery.min.js"></script>
+    <link rel="stylesheet" href="/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="/css/bootstrap-responsive.min.css"/>
+    <link rel="stylesheet" href="/css/ehsm.css"/>
   </head>
-  <body>
-    <form action="pay" method="POST">
+  <body ng-controller="TicketsController">
+    <form action="pay" method="POST" class="form-horizontal">
+      <h1>Buy Ticket for EHSM 2014 {{he}}</h1>
+      <div class="control-group">
+        <label class="radio"><input type="radio" name="ticketType" value="student"> Student/unemployed €45</label>
+        <label class="radio"><input type="radio" name="ticketType" value="regular" checked> Regular €70</label>
+        <label class="radio"><input type="radio" name="ticketType" value="supporter"> Supporter €272</label>
+        <label class="radio"><input type="radio" name="ticketType" value="gold-supporter">Gold Supporter €1337</label>
+      </div>
       <input type="hidden" name="amount" value="250"/>
       <input type="hidden" name="product" value="ticketicket"/>
       <script src="https://button.paymill.com/v1/"
               id="button"
               data-label="Pay with ELV"
-              data-title="Buy our product"
-              data-description="It's a great product"
-              data-submit-button="Pay 2.50 EUR"
-              data-amount="250"
-              data-currency="EUR"
-              data-public-key="8585298099281237d892403846aedaf0"
+              data-title="{{ticketTitle}}"
+              data-description="{{ticketTitle}}"
+              data-submit-button="Pay {{ticketPrice}} EUR"
+              data-amount="{{ticketPriceCents}}"
+              data-currency="{{currency}}"
+              data-public-key="{{paymillPublicKey}}"
               data-elv="true"
-              data-lang="de-DE">
+              data-lang="en-GB">
       </script>
       <script src="https://button.paymill.com/v1/"
               id="button"
               data-label="Pay with Credit Card"
-              data-title="Buy our product"
-              data-description="It's a great product"
-              data-submit-button="Pay 2.50 EUR"
-              data-amount="250"
-              data-currency="EUR"
-              data-public-key="8585298099281237d892403846aedaf0"
+              data-title="{{ticketTitle}}"
+              data-description="{{ticketTitle}}"
+              data-submit-button="Pay {{ticketPrice}} EUR"
+              data-amount="{{ticketPriceCents}}"
+              data-currency="{{currency}}"
+              data-public-key="{{paymillPublicKey}}"
               data-elv="false"
-              data-lang="de-DE">
+              data-lang="en-GB">
       </script>
     </form>
   </body>
+  <script src="/js/angular.min.js"></script>
+  <script src="/js/angular-resource.min.js"></script>
+  <script src="/js/bootstrap.min.js"></script>
+  <script src="/js/angular-strap.js"></script>
+  <script src="/js/tickets.js"></script>
 </html>
