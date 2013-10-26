@@ -68,62 +68,68 @@
           </div>
         </div>
         <p class="payment-errors alert-error span3" ng-show="error">{{error}}</p>
-        <div id="payment-form-cc" ng-show="fop == 'cc'">
-          <div class="controls controls-row">
-            <div class="span2">
-              <label class="card-number-label">Credit Card #</label>
-              <input class="card-number span2" type="text" size="20" ng-model="payment.card"
-                     payments-format="card" payments-validate="card" placeholder="XXXX XXXX XXXX XXXX"/>
+        <div id="payment-form">
+          <div id="payment-form-cc" ng-show="fop == 'cc'">
+            <div class="controls controls-row">
+              <div class="span2">
+                <label class="card-number-label">Credit Card #</label>
+                <input class="card-number span2" type="text" size="20" ng-model="payment.card"
+                       payments-format="card" payments-validate="card" placeholder="XXXX XXXX XXXX XXXX"/>
+              </div>
+              <div class="span1">
+                <label class="card-cvc-label">CVC</label>
+                <input class="card-cvc span1" type="text" size="4" ng-model="payment.cvc"
+                       payments-format="cvc" payments-validate="cvc" placeholder="XXXX"/>
+              </div>
             </div>
-            <div class="span1">
-              <label class="card-cvc-label">CVC</label>
-              <input class="card-cvc span1" type="text" size="4" ng-model="payment.cvc"
-                     payments-format="cvc" payments-validate="cvc" placeholder="XXXX"/>
+            <div class="controls controls-row">
+              <div class="span3">
+                <label class="card-holdername-label">Name on Card</label>
+                <input class="card-holdername span3" type="text" size="20" ng-model="payment.name"/>
+              </div>
             </div>
-          </div>
-          <div class="controls controls-row">
-            <div class="span3">
-              <label class="card-holdername-label">Name on Card</label>
-              <input class="card-holdername span3" type="text" size="20" ng-model="payment.name"/>
-            </div>
-          </div>
-          <div class="controls controls-row">
-            <div class="span3">
-              <label class="card-expiry-label">Validity</label>
-              <input class="card-expiry span1" type="text" size="7" placeholder="MM / YY" ng-model="payment.expiry"
-                     payments-format="expiry" payments-validate="expiry"/>
-            </div>
-          </div>
-        </div>
-        <div id="payment-form-elv" ng-show="fop == 'elv'">
-          <div class="controls controls-row">
-            <div class="span3">
-              <label class="elv-holdername-label">Account Holder</label>
-              <input class="elv-holdername span3" type="text" size="20" value="Max Mustermann" ng-model="payment.name"/>
+            <div class="controls controls-row">
+              <div class="span3">
+                <label class="card-expiry-label">Validity</label>
+                <input class="card-expiry span1" type="text" size="7" placeholder="MM / YY" ng-model="payment.expiry"
+                       payments-format="expiry" payments-validate="expiry"/>
+              </div>
             </div>
           </div>
-          <div class="controls controls-row">
-            <div class="span3">
-              <label class="elv-account-label">Account #</label>
-              <input class="elv-account span3" type="text" size="20" value="1234567890" ng-model="payment.kontonummer"/>
+          <div id="payment-form-elv" ng-show="fop == 'elv'">
+            <div class="controls controls-row">
+              <div class="span3">
+                <label class="elv-holdername-label">Account Holder</label>
+                <input class="elv-holdername span3" type="text" size="20" value="Max Mustermann" ng-model="payment.name"/>
+              </div>
+            </div>
+            <div class="controls controls-row">
+              <div class="span3">
+                <label class="elv-account-label">Account #</label>
+                <input class="elv-account span3" type="text" size="20" value="1234567890" ng-model="payment.kontonummer"/>
+              </div>
+            </div>
+            <div class="controls controls-row">
+              <div class="span3">
+                <label class="elv-bankcode-label">Bank routing code (BLZ)</label>
+                <input class="elv-bankcode span3" type="text" size="20" value="99999999" ng-model="payment.bankleitzahl"/>
+              </div>
             </div>
           </div>
-          <div class="controls controls-row">
-            <div class="span3">
-              <label class="elv-bankcode-label">Bank routing code (BLZ)</label>
-              <input class="elv-bankcode span3" type="text" size="20" value="99999999" ng-model="payment.bankleitzahl"/>
+          <div id="payment-form-bitpay" ng-show="fop == 'bitpay'">
+            <div class="controls controls-row">
+              <div class="span3">
+                Payment by Bitpay is not yet available, please check back later.
+              </div>
             </div>
           </div>
-        </div>
-        <div id="payment-form-bitpay" ng-show="fop == 'bitpay'">
-          <div class="controls controls-row">
-            Payment by Bitpay is not yet available, please check back later.
-          </div>
-        </div>
-        <div id="payment-form-bitpay" ng-show="fop == 'wire'">
-          <div class="controls controls-row">
-            We will generate an invoice for you, you send the money by
-            direct transfer to our bank account.
+          <div id="payment-form-wire" ng-show="fop == 'wire'">
+            <div class="controls controls-row">
+              <div class="span3">
+                We will generate an invoice for you, you send the money by
+                direct transfer to our bank account.
+              </div>
+            </div>
           </div>
         </div>
       </fieldset>

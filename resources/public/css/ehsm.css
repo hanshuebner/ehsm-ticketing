@@ -1,3 +1,8 @@
 label {
     font-size: 14pt;
 }
+
+#payment-form {
+    height: 14em;
+    padding-top: 1em;
+}
