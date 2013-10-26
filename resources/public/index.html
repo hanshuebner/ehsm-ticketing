@@ -17,22 +17,22 @@
         <div class="controls control-group">
           <label class="radio">
             <input type="radio" ng-model="ticket.type" value="student" bs-tooltip="tooltips.studentTicket" ng-click="updateTotal()">
-            Student/unemployed €45</label>
+            Student/unemployed € 45</label>
           <label class="radio">
             <input type="radio" ng-model="ticket.type" value="regularEarly" bs-tooltip="tooltips.earlyTicket"
                    ng-disabled="!earlyTicketAvailable" ng-click="updateTotal()">
-            Regular (early) €70</label>
+            Regular (early) € 70</label>
           <label class="radio">
             <input type="radio" ng-model="ticket.type" value="regularLate" bs-tooltip="tooltips.lateTicket"
                    ng-disabled="earlyTicketAvailable" ng-click="updateTotal()">
-            Regular (late) €95</label>
+            Regular (late) € 95</label>
           <label class="radio">
             <input type="radio" ng-model="ticket.type" value="supporter" bs-tooltip="tooltips.supporterTicket"
                    checked ng-click="updateTotal()">
-            Supporter €272</label>
+            Supporter € 272</label>
           <label class="radio">
             <input type="radio" ng-model="ticket.type" value="goldSupporter" bs-tooltip="tooltips.goldSupporterTicket" ng-click="updateTotal()">
-            Gold Supporter €1337</label>
+            Gold Supporter € 1337</label>
         </div>
         <label>We appreciate your additional donation to support EHSM:</label>
         <div class="controls controls-row">
@@ -91,7 +91,6 @@
             <button type="button" class="btn" value="wire">Wire</button>
           </div>
         </div>
-        <p class="payment-errors alert-error span3" ng-show="error">{{error}}</p>
         <div id="payment-form">
           <div id="payment-form-cc" ng-show="fop == 'cc'">
             <div class="controls controls-row">

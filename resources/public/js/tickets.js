@@ -3,7 +3,6 @@ var PAYMILL_PUBLIC_KEY = '8585298099281237d892403846aedaf0';
 angular
     .module('ehsm', ['angularPayments', '$strap.directives'])
     .controller('TicketsController', ['$scope', function ($scope) {
-        console.log('TicketsController');
         $scope.ticket = { donation: 0,
                           type: 'supporter' };
         $scope.totalAmount = 0;
@@ -27,18 +26,42 @@ angular
                              supporter: 272,
                              goldSupporter: 1337 };
         $scope.updateTotal = function () {
-            console.log($scope.ticket);
             $scope.totalAmount = (parseInt($scope.ticket.donation) || 0) + ticketPrices[$scope.ticket.type];
         }
         $scope.updateTotal();
         $scope.doit = function () {
-            console.log('submit', $scope);
-            paymill.createToken({ number: $scope.payment.kontonummer,
-                                  bank: $scope.payment.bankleitzahl,
-                                  accountholder: $scope.payment.name },
-                                function (error, result) {
-                                    console.log('paymill error', error, 'result', result);
-                                });
+            $scope.error = '';
+
+            function createPaymillToken(request) {
+                paymill.createToken(request,
+                                    function (error, result) {
+                                        if (error) {
+                                            console.log('paymill error', error);
+                                            $scope.error = 'payment error: ' + error.apierror;
+                                            $scope.$apply();
+                                        } else {
+                                            console.log('paymill result', result);
+                                        }
+                                    });
+            }
+
+            switch ($scope.fop) {
+            case 'elv':
+                createPaymillToken({ number: $scope.payment.kontonummer,
+                                     bank: $scope.payment.bankleitzahl,
+                                     accountholder: $scope.payment.name });
+                break;
+            case 'cc':
+                createPaymillToken({ number: $scope.payment.card,
+                                     cvc: $scope.payment.cvc,
+                                     exp_month: parseInt($scope.payment.expiry.substr(0, 2)),
+                                     exp_year: 2000 + parseInt($scope.payment.expiry.substr(5)),
+                                     amount_int: $scope.totalAmount * 100,
+                                     currency: 'EUR' });
+                break;
+            default:
+                $scope.error = "FOP not supported yet";
+            }
             return false;
         }
     }]);
