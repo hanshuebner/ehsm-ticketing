@@ -10,21 +10,118 @@
     <script type="text/javascript" src="https://bridge.paymill.com/"></script>
   </head>
   <body ng-controller="TicketsController">
-    <form action="pay" method="POST" class="form-horizontal">
-      <h1>Buy Ticket for EHSM 2014 {{he}}</h1>
-      <div class="control-group">
-        <label class="radio"><input type="radio" name="ticketType" value="student"> Student/unemployed €45</label>
-        <label class="radio"><input type="radio" name="ticketType" value="regular" checked> Regular €70</label>
-        <label class="radio"><input type="radio" name="ticketType" value="supporter"> Supporter €272</label>
-        <label class="radio"><input type="radio" name="ticketType" value="gold-supporter">Gold Supporter €1337</label>
+    <h1>Buy Ticket for EHSM 2014 {{he}}</h1>
+    <form action="pay" method="POST" class="well form-horizontal">
+      <fieldset>
+        <legend>Ticket Type</legend>
+        <div class="controls control-group">
+          <label class="radio"><input type="radio" name="ticketType" value="student" bs-tooltip="tooltips.studentTicket">
+            Student/unemployed €45</label>
+          <label class="radio"><input type="radio" name="ticketType" value="regular" checked> Regular €70</label>
+          <label class="radio"><input type="radio" name="ticketType" value="supporter" bs-tooltip="tooltips.supporterTicket">
+            Supporter €272</label>
+          <label class="radio"><input type="radio" name="ticketType" value="gold-supporter" bs-tooltip="tooltips.goldSupporterTicket">
+            Gold Supporter €1337</label>
+        </div>
+      </fieldset>
+      <fieldset>
+        <legend>Participant</legend>
+        <div class="controls controls-row">
+          <div class="span3">
+            <label class="card-holdername-label">Name</label>
+            <input class="card-holdername span3" type="text" size="20" ng-model="participantName" bs-tooltip="tooltips.participantName"/>
+          </div>
+        </div>
+      </fieldset>
+      <fieldset>
+        <legend>Invoice Information</legend>
+        <div class="controls controls-row">
+          <div class="span3">
+            <label class="card-holdername-label">Email</label>
+            <input class="card-holdername span3" type="text" size="20" ng-model="emailAddress" bs-tooltip="tooltips.emailAddress"/>
+          </div>
+        </div>
+        <div class="controls controls-row">
+          <div class="span3">
+            <label class="card-holdername-label">Recipient</label>
+            <textarea class="span3" rows="5" ng-model="invoiceInfo" bs-tooltip="tooltips.invoiceInformation"></textarea>
+          </div>
+        </div>
+      </fieldset>        
+      <fieldset>
+        <legend>Payment</legend>
+        <div class="controls controls-row">
+          <div class="btn-group span4" ng-model="fop" bs-buttons-radio>
+            <button type="button" class="btn" value="cc">Credit card</button>
+            <button type="button" class="btn" value="elv">ELV</button>
+            <button type="button" class="btn" value="bitpay">Bitpay</button>
+          </div>
+        </div>
+        <p class="payment-errors alert-error span3" ng-show="error">{{error}}</p>
+        <div id="payment-form-cc" ng-show="fop == 'cc'">
+          <div class="controls controls-row">
+            <div class="span2">
+              <label class="card-number-label">Credit Card #</label>
+              <input class="card-number span2" type="text" size="20" ng-model="card"
+                     payments-format="card" payments-validate="card" placeholder="XXXX XXXX XXXX XXXX"/>
+            </div>
+            <div class="span1">
+              <label class="card-cvc-label">CVC</label>
+              <input class="card-cvc span1" type="text" size="4" ng-model="cvc"
+                     payments-format="cvc" payments-validate="cvc" placeholder="XXXX"/>
+            </div>
+          </div>
+          <div class="controls controls-row">
+            <div class="span3">
+              <label class="card-holdername-label">Name on Card</label>
+              <input class="card-holdername span3" type="text" size="20" ng-model="name"/>
+            </div>
+          </div>
+          <div class="controls controls-row">
+            <div class="span3">
+              <label class="card-expiry-label">Validity</label>
+              <input class="card-expiry span1" type="text" size="7" placeholder="MM / YY" ng-model="cvc"
+                     ng-model="expiry" payments-format="expiry" payments-validate="expiry"/>
+            </div>
+          </div>
+        </div>
+        <div id="payment-form-elv" ng-show="fop == 'elv'">
+          <div class="controls controls-row">
+            <div class="span3">
+              <label class="elv-holdername-label">Account Holder</label>
+              <input class="elv-holdername span3" type="text" size="20" value="Max Mustermann" ng-model="name"/>
+            </div>
+          </div>
+          <div class="controls controls-row">
+            <div class="span3">
+              <label class="elv-account-label">Account #</label>
+              <input class="elv-account span3" type="text" size="20" value="1234567890" ng-model="kontonummer"/>
+            </div>
+          </div>
+          <div class="controls controls-row">
+            <div class="span3">
+              <label class="elv-bankcode-label">Bank routing code (BLZ)</label>
+              <input class="elv-bankcode span3" type="text" size="20" value="99999999" ng-model="bankleitzahl"/>
+            </div>
+          </div>
+        </div>
+        <div id="payment-form-bitpay" ng-show="fop == 'bitpay'">
+          <div class="controls controls-row">
+            Payment by Bitpay is not yet available, please check back later.
+          </div>
+        </div>
+      </fieldset>
+      <div class="controls controls-row">
+        <div class="span4">
+          <button class="submit-button btn btn-primary" type="submit">Pay</button>
+        </div>
       </div>
-      <form-input-line name="number" label="Credit card #" placeholder="xxxx xxxx xxxx xxxx"></form-input-line>
-      <form-input-line name="expiry" label="Expiry" placeholder="MM/YY"></form-input-line>
     </form>
   </body>
   <script src="/js/angular.min.js"></script>
   <script src="/js/angular-resource.min.js"></script>
   <script src="/js/bootstrap.min.js"></script>
   <script src="/js/angular-strap.js"></script>
+  <script src="/js/angular-payments.js"></script>
   <script src="/js/tickets.js"></script>
 </html>
