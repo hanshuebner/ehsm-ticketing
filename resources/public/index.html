@@ -11,14 +11,17 @@
   </head>
   <body ng-controller="TicketsController">
     <h1>Buy Ticket for EHSM 2014 {{he}}</h1>
-    <form action="pay" method="POST" class="well form-horizontal">
+    <form action="pay" method="POST" class="well form-horizontal" ng-submit="doit()" onsubmit="return false;">
       <fieldset>
         <legend>Ticket Type</legend>
         <div class="controls control-group">
           <label class="radio"><input type="radio" name="ticketType" value="student" bs-tooltip="tooltips.studentTicket">
             Student/unemployed €45</label>
-          <label class="radio"><input type="radio" name="ticketType" value="regular" checked> Regular €70</label>
-          <label class="radio"><input type="radio" name="ticketType" value="supporter" bs-tooltip="tooltips.supporterTicket">
+          <label class="radio"><input ng-disabled="!earlyTicketAvailable" type="radio" name="ticketType" value="regularEarly" bs-tooltip="tooltips.earlyTicket">
+            Regular (early) €70</label>
+          <label class="radio"><input ng-disabled="earlyTicketAvailable" type="radio" name="ticketType" value="regularLate" bs-tooltip="tooltips.lateTicket">
+            Regular (late) €95</label>
+          <label class="radio"><input type="radio" name="ticketType" value="supporter" bs-tooltip="tooltips.supporterTicket" checked>
             Supporter €272</label>
           <label class="radio"><input type="radio" name="ticketType" value="gold-supporter" bs-tooltip="tooltips.goldSupporterTicket">
             Gold Supporter €1337</label>
@@ -29,7 +32,13 @@
         <div class="controls controls-row">
           <div class="span3">
             <label class="card-holdername-label">Name</label>
-            <input class="card-holdername span3" type="text" size="20" ng-model="participantName" bs-tooltip="tooltips.participantName"/>
+            <input class="card-holdername span3" type="text" size="20" ng-model="ticket.participantName" bs-tooltip="tooltips.participantName"/>
+          </div>
+        </div>
+        <div class="controls controls-row">
+          <div class="span3">
+            <label class="card-holdername-label">Project / Company / Affiliation</label>
+            <input class="card-holdername span3" type="text" size="20" ng-model="ticket.participantProject" bs-tooltip="tooltips.participantProject"/>
           </div>
         </div>
       </fieldset>
@@ -38,7 +47,7 @@
         <div class="controls controls-row">
           <div class="span3">
             <label class="card-holdername-label">Email</label>
-            <input class="card-holdername span3" type="text" size="20" ng-model="emailAddress" bs-tooltip="tooltips.emailAddress"/>
+            <input class="card-holdername span3" type="text" size="20" ng-model="ticket.emailAddress" bs-tooltip="tooltips.emailAddress"/>
           </div>
         </div>
         <div class="controls controls-row">
@@ -55,6 +64,7 @@
             <button type="button" class="btn" value="cc">Credit card</button>
             <button type="button" class="btn" value="elv">ELV</button>
             <button type="button" class="btn" value="bitpay">Bitpay</button>
+            <button type="button" class="btn" value="wire">Wire</button>
           </div>
         </div>
         <p class="payment-errors alert-error span3" ng-show="error">{{error}}</p>
@@ -62,26 +72,26 @@
           <div class="controls controls-row">
             <div class="span2">
               <label class="card-number-label">Credit Card #</label>
-              <input class="card-number span2" type="text" size="20" ng-model="card"
+              <input class="card-number span2" type="text" size="20" ng-model="payment.card"
                      payments-format="card" payments-validate="card" placeholder="XXXX XXXX XXXX XXXX"/>
             </div>
             <div class="span1">
               <label class="card-cvc-label">CVC</label>
-              <input class="card-cvc span1" type="text" size="4" ng-model="cvc"
+              <input class="card-cvc span1" type="text" size="4" ng-model="payment.cvc"
                      payments-format="cvc" payments-validate="cvc" placeholder="XXXX"/>
             </div>
           </div>
           <div class="controls controls-row">
             <div class="span3">
               <label class="card-holdername-label">Name on Card</label>
-              <input class="card-holdername span3" type="text" size="20" ng-model="name"/>
+              <input class="card-holdername span3" type="text" size="20" ng-model="payment.name"/>
             </div>
           </div>
           <div class="controls controls-row">
             <div class="span3">
               <label class="card-expiry-label">Validity</label>
-              <input class="card-expiry span1" type="text" size="7" placeholder="MM / YY" ng-model="cvc"
-                     ng-model="expiry" payments-format="expiry" payments-validate="expiry"/>
+              <input class="card-expiry span1" type="text" size="7" placeholder="MM / YY" ng-model="payment.expiry"
+                     payments-format="expiry" payments-validate="expiry"/>
             </div>
           </div>
         </div>
@@ -89,25 +99,31 @@
           <div class="controls controls-row">
             <div class="span3">
               <label class="elv-holdername-label">Account Holder</label>
-              <input class="elv-holdername span3" type="text" size="20" value="Max Mustermann" ng-model="name"/>
+              <input class="elv-holdername span3" type="text" size="20" value="Max Mustermann" ng-model="payment.name"/>
             </div>
           </div>
           <div class="controls controls-row">
             <div class="span3">
               <label class="elv-account-label">Account #</label>
-              <input class="elv-account span3" type="text" size="20" value="1234567890" ng-model="kontonummer"/>
+              <input class="elv-account span3" type="text" size="20" value="1234567890" ng-model="payment.kontonummer"/>
             </div>
           </div>
           <div class="controls controls-row">
             <div class="span3">
               <label class="elv-bankcode-label">Bank routing code (BLZ)</label>
-              <input class="elv-bankcode span3" type="text" size="20" value="99999999" ng-model="bankleitzahl"/>
+              <input class="elv-bankcode span3" type="text" size="20" value="99999999" ng-model="payment.bankleitzahl"/>
             </div>
           </div>
         </div>
         <div id="payment-form-bitpay" ng-show="fop == 'bitpay'">
           <div class="controls controls-row">
             Payment by Bitpay is not yet available, please check back later.
+          </div>
+        </div>
+        <div id="payment-form-bitpay" ng-show="fop == 'wire'">
+          <div class="controls controls-row">
+            We will generate an invoice for you, you send the money by
+            direct transfer to our bank account.
           </div>
         </div>
       </fieldset>
@@ -123,5 +139,6 @@
   <script src="/js/bootstrap.min.js"></script>
   <script src="/js/angular-strap.js"></script>
   <script src="/js/angular-payments.js"></script>
+  <script src="/js/moment-with-langs.min.js"></script>
   <script src="/js/tickets.js"></script>
 </html>
