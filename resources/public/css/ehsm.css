@@ -20,3 +20,11 @@ input.ng-invalid-required { background: #FFE4E1; }
     font-size: 10pt;
 }
 
+.total-amount {
+    font-size: 20pt;
+    background: white;
+    padding: 10px;
+    border: solid black 1px;
+    -moz-border-radius: 15px;
+    border-radius: 15px;
+}
