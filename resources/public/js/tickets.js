@@ -2,11 +2,11 @@ var PAYMILL_PUBLIC_KEY = '8585298099281237d892403846aedaf0';
 
 angular
     .module('ehsm', ['angularPayments', '$strap.directives'])
-    .controller('TicketsController', ['$scope', function ($scope) {
-        $scope.ticket = { donation: 0,
-                          type: 'supporter' };
+    .controller('TicketsController', ['$scope', '$http', function ($scope, $http) {
+        $scope.ticket = localStorage.ticket ? JSON.parse(localStorage.ticket) : { donation: 0, type: 'supporter'};
+        $scope.payment = localStorage.payment ? JSON.parse(localStorage.payment) : {};
+
         $scope.totalAmount = 0;
-        $scope.payment = {};
         $scope.fop = 'cc';
         $scope.earlyTicketAvailable = moment().isBefore('2014-02-02');
         $scope.tooltips = {
@@ -51,6 +51,12 @@ angular
                                             $scope.$apply();
                                         } else {
                                             console.log('paymill result', result);
+                                            $http
+                                                .post('/pay', { ticket: $scope.ticket,
+                                                                participant: $scope.participant })
+                                                .success(function () {
+                                                    console.log('payment succeeded');
+                                                });
                                         }
                                     });
             }

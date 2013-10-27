@@ -16,5 +16,6 @@
                  [ring-basic-authentication "1.0.2"]
                  [ring.middleware.logger "0.4.0"]
                  [com.cemerick/url "0.1.0"]
-                 [enlive "1.1.4"]]
+                 [enlive "1.1.4"]
+                 [clj-fo "0.0.1"]]
   :main ehsm.core)

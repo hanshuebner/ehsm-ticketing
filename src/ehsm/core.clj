@@ -11,7 +11,8 @@
             [clj-time.core :as time-core]
             [clj-time.format :as time-format]
             [clj-paymill.net :as paymill-net]
-            [clj-paymill.client :as paymill-client]))
+            [clj-paymill.client :as paymill-client]
+            [ehsm.invoice :as invoice]))
 
 (defonce default-port 7676)
 (defonce paymill-private-key "f0a966a7f4d01204c4712def21a9f73d")
@@ -71,6 +72,7 @@
                     50600 "Duplicate transaction."})
 
 (defn pay [req]
+  (println (:body req))
   (let [{:keys [paymillToken amount currency description]} (:params req)
         result (make-paymill-transaction {:token paymillToken :amount amount :currency currency :description description})]
     (if (= (:response_code result) 20000)
