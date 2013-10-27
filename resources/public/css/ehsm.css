@@ -1,8 +1,22 @@
 label {
-    font-size: 14pt;
+    margin-top: 6px;
+    font-size: 13pt;
 }
 
+.notice {
+    font-size: 14pt;
+    line-height: 20pt;
+}
+
+input.ng-invalid-required { background: #FFE4E1; }
+
 #payment-form {
-    height: 14em;
+    height: 16.5em;
     padding-top: 1em;
 }
+
+.payment-provider-info {
+    margin-top: 1em;
+    font-size: 10pt;
+}
+

@@ -16,9 +16,10 @@ angular
             supporterTicket: "We'll put your name onto the \"Supporters\" page on our web site",
             goldSupporterTicket: "We'll put your name and your logo onto the \"Supporters\" page on our web site and into our printed programme",
             participantName: "We're going to print this name onto your badge",
-            participantName: "We're going to print this onto your badge, too",
+            participantProject: "We're going to print this onto your badge, too",
             emailAddress: "We're going to send your payment confirmation and updates about EHSM 2014 to this email address",
-            invoiceInformation: "If you want a name and address to appear on your invoice, please enter it here"
+            invoiceInformation: "If you want a name and address to appear on your invoice, please enter it here",
+            paymillInfo: "Your payment details are not transmitted to our server."
         }
         var ticketPrices = { student: 45,
                              regularEarly: 70,
@@ -29,7 +30,16 @@ angular
             $scope.totalAmount = (parseInt($scope.ticket.donation) || 0) + ticketPrices[$scope.ticket.type];
         }
         $scope.updateTotal();
-        $scope.doit = function () {
+
+        $scope.submitButtonLabel = function () {
+            switch ($scope.fop) {
+                case 'bitpay': return "Bummer";
+                case 'wire': return "Generate Invoice";
+                default: return "Pay";
+            }
+        }
+
+        $scope.submit = function () {
             $scope.error = '';
 
             function createPaymillToken(request) {
@@ -61,6 +71,7 @@ angular
                 break;
             default:
                 $scope.error = "FOP not supported yet";
+                console.log($scope.error);
             }
             return false;
         }
