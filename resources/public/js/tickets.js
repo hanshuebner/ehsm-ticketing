@@ -17,7 +17,7 @@ angular
             goldSupporterTicket: "We'll put your name and your logo onto the \"Supporters\" page on our web site and into our printed programme",
             participantName: "We're going to print this name onto your badge",
             participantProject: "We're going to print this onto your badge, too",
-            emailAddress: "We're going to send your payment confirmation and updates about EHSM 2014 to this email address",
+            emailAddress: "We're going to send your invoice, payment confirmation and updates about EHSM 2014 to this email address",
             invoiceInformation: "If you want a name and address to appear on your invoice, please enter it here",
             paymillInfo: "Your payment details are not transmitted to our server."
         }
