@@ -18,4 +18,5 @@
                  [com.cemerick/url "0.1.0"]
                  [enlive "1.1.4"]
                  [clj-fo "0.0.1"]]
+  :jvm-opts ["-Djavax.net.ssl.trustStore=resources/cacerts"]
   :main ehsm.core)
