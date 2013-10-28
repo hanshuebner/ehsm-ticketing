@@ -17,6 +17,7 @@
                  [ring.middleware.logger "0.4.0"]
                  [com.cemerick/url "0.1.0"]
                  [enlive "1.1.4"]
-                 [clj-fo "0.0.1"]]
+                 [clj-fo "0.0.1"]
+                 [com.draines/postal "1.11.0"]]
   :jvm-opts ["-Djavax.net.ssl.trustStore=resources/cacerts"]
   :main ehsm.core)

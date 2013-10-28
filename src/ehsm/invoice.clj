@@ -3,7 +3,10 @@
   (:require [clj-time.format :as time-format]
             [clj-time.core :as time-core]
             [clj-fo.fo :as fo]
-            [clojure.string :as string]))
+            [clojure.string :as string]
+            [cheshire.core :as json]))
+
+(def invoices-directory "invoices")
 
 (defn base-price [euro-amount]
   (/ (ceil (float (* (/ (* euro-amount 100) 11900) 10000))) 100))
@@ -11,7 +14,7 @@
 (defn vat [euro-amount]
   (/ (floor (float (* (/ (* euro-amount 100) 11900) 1900))) 100))
 
-(defn create-invoice [invoice-number recipient ticket donation]
+(defn create-invoice-fo [invoice-number recipient ticket donation]
   (let [price (:price ticket)
         base-price (base-price price)
         vat (vat price)
@@ -42,7 +45,7 @@
                [["Date:" (time-format/unparse
                           (time-format/formatters :date)
                           (time-core/now))]
-                ["Invoice number:" invoice-number]])
+                ["Invoice number:" (str invoice-number)]])
      (fo/table {:border-width "0.5pt"}
                ["14cm" "3cm"]
                (concat
@@ -63,16 +66,41 @@
      (fo/block {:space-before.optimum "35pt"}
                "Your payment has been received through Paymill.  We're looking forward to seeing you at the conference!"))))
 
-(defn create-invoice-pdf [pathname & arguments]
-  (fo/write-pdf! (apply create-invoice arguments) pathname))
+(defn create-invoice-pdf [pathname invoice-number recipient ticket donation]
+  (fo/write-pdf! (create-invoice-fo invoice-number recipient ticket donation) pathname))
+
+(def invoice-directory (java.io.File. "invoices"))
+
+(defn find-last-invoice-number []
+  (reduce (fn [previous-max file]
+            (max previous-max
+                 (if-let [invoice-number-string (first (rest (re-matches #"invoice-0*(\d+).json" (.getName file))))]
+                   (read-string invoice-number-string)
+                   previous-max)))
+          1
+          (file-seq invoice-directory)))
+
+(def last-invoice-number (atom (find-last-invoice-number)))
+
+(defn next-invoice-number []
+  (swap! last-invoice-number inc))
+
+(defn make-invoice [order ticket payment-result]
+  (io!
+   (let [invoice-number (next-invoice-number)
+         file-basename (format "%s/invoice-%04d" invoices-directory invoice-number)
+         pdf-pathname (str file-basename ".pdf")
+         json-pathname (str file-basename ".json")]
+     (create-invoice-pdf pdf-pathname invoice-number (:invoiceInfo order) ticket (:donation order))
+     (spit json-pathname (json/generate-string {:order order :ticket ticket :paymentResult payment-result} {:pretty true}))
+     pdf-pathname)))
 
 #_
-(fo/write-pdf!
- (create-invoice
-  "EHSM01"
+(create-invoice-pdf
+  "invoices/invoice-1.pdf"
+  1
   "Hans Hübner
 Strelitzer Straße 63
 10115 Berlin"
   {:description "Supporter" :price 272}
   30)
- "invoice-website-acme.pdf")

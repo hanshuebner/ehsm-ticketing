@@ -12,10 +12,14 @@
             [clj-time.format :as time-format]
             [clj-paymill.net :as paymill-net]
             [clj-paymill.client :as paymill-client]
-            [ehsm.invoice :as invoice]))
+            [ehsm.invoice :as invoice]
+            [postal.core :as postal]))
 
 (defonce default-port 7676)
 (defonce paymill-private-key "f0a966a7f4d01204c4712def21a9f73d")
+
+(defonce smtp-host "localhost")
+(defonce email-from "EHSM 2014 Tickets <tickets@ehsm.eu>")
 
 (defonce tickets {"student" {:price 45 :description "Student / Unemployed"}
                   "regularEarly" {:price 70 :description "Regular (Early registration)"}
@@ -82,9 +86,28 @@
                     50502 "Risk management transaction timeout."
                     50600 "Duplicate transaction."})
 
+(defn send-invoice [order invoice-pdf]
+  (postal/send-message ^{:host smtp-host}
+                       {:from email-from
+                        :to (:emailAddress order)
+                        :subject "Invoice for your EHSM ticket"
+                        :body [{:type "text/plain"
+                                :content "Hi,
+
+Thank you for registering for the Exceptionally Hard & Soft Meeting 2014!
+
+Please find your invoice attached.  You will hear from us when we have worked out
+more details of the conference.
+
+See you at DESY in June!
+-The EHSM Team"}
+                               {:type :inline
+                                :content invoice-pdf
+                                :content-type "application/pdf"}]}))
+
 (defn pay [req]
-  (let [{:keys [paymillToken ticket]} (:body req)
-        {:keys [donation type participantName participantProject emailAddress invoiceInfo]} ticket]
+  (let [{:keys [paymillToken order]} (:body req)
+        {:keys [donation type participantName participantProject emailAddress invoiceInfo]} order]
     (if (and (= type "regularEarly")
              (not (early-available?)))
       {:status 423 :body "early registration is closed"}
@@ -94,9 +117,8 @@
                                (str " + " donation " EUR donation")))
             result (make-paymill-transaction {:token paymillToken :amount amount :currency "EUR" :description description})]
         (if (= (:response_code result) 20000)
-          (do
-            #_
-            (send-invoice emailAddress invoiceInfo (:description (tickets type)) (:amount (tickets type)) donation)
+          (let [invoice-pdf (invoice/make-invoice order (tickets type) result)]
+            (send-invoice order invoice-pdf)
             {:status 200 :body "ok"})
           (do
             (println "payment failed" result)

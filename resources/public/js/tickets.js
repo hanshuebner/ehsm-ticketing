@@ -52,7 +52,7 @@ angular
                                         } else {
                                             console.log('paymill result', result);
                                             $http
-                                                .post('/pay', { ticket: $scope.ticket,
+                                                .post('/pay', { order: $scope.ticket,
                                                                 paymillToken: result.token })
                                                 .success(function () {
                                                     console.log('payment succeeded');
