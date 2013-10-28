@@ -53,7 +53,7 @@ angular
                                             console.log('paymill result', result);
                                             $http
                                                 .post('/pay', { ticket: $scope.ticket,
-                                                                participant: $scope.participant })
+                                                                paymillToken: result.token })
                                                 .success(function () {
                                                     console.log('payment succeeded');
                                                 });

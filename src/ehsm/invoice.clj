@@ -63,6 +63,9 @@
      (fo/block {:space-before.optimum "35pt"}
                "Your payment has been received through Paymill.  We're looking forward to seeing you at the conference!"))))
 
+(defn create-invoice-pdf [pathname & arguments]
+  (fo/write-pdf! (apply create-invoice arguments) pathname))
+
 #_
 (fo/write-pdf!
  (create-invoice
@@ -71,5 +74,5 @@
 Strelitzer Straße 63
 10115 Berlin"
   {:description "Supporter" :price 272}
-  nil)
+  30)
  "invoice-website-acme.pdf")

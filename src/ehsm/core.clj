@@ -17,6 +17,17 @@
 (defonce default-port 7676)
 (defonce paymill-private-key "f0a966a7f4d01204c4712def21a9f73d")
 
+(defonce tickets {"student" {:price 45 :description "Student / Unemployed"}
+                  "regularEarly" {:price 70 :description "Regular (Early registration)"}
+                  "regularLate" {:price 95 :description "Regular (Late registration)"}
+                  "supporter" {:price 272 :description "Supporter"}
+                  "goldSupporter" {:price 1337 :description "Gold Supporter"}})
+
+(defonce early-ticket-deadline (time-core/date-time 2014 2 2))
+
+(defn early-available? []
+  (not (time-core/after? (time-core/now) early-ticket-deadline)))
+
 (defn paymill-callback [req]
   (println "PAYMILL-CALLBACK" (:body req))
   {:status 200
@@ -72,14 +83,24 @@
                     50600 "Duplicate transaction."})
 
 (defn pay [req]
-  (println (:body req))
-  (let [{:keys [paymillToken amount currency description]} (:params req)
-        result (make-paymill-transaction {:token paymillToken :amount amount :currency currency :description description})]
-    (if (= (:response_code result) 20000)
-      {:status 200 :body "ok"}
-      (do
-        (println "payment failed" result)
-        {:status 423 :body "payment failed"}))))
+  (let [{:keys [paymillToken ticket]} (:body req)
+        {:keys [donation type participantName participantProject emailAddress invoiceInfo]} ticket]
+    (if (and (= type "regularEarly")
+             (not (early-available?)))
+      {:status 423 :body "early registration is closed"}
+      (let [amount (* (+ (:price (tickets type)) donation) 100)
+            description (str "EHSM " (:description (tickets type)) " Ticket"
+                             (when (and donation (pos? donation))
+                               (str " + " donation " EUR donation")))
+            result (make-paymill-transaction {:token paymillToken :amount amount :currency "EUR" :description description})]
+        (if (= (:response_code result) 20000)
+          (do
+            #_
+            (send-invoice emailAddress invoiceInfo (:description (tickets type)) (:amount (tickets type)) donation)
+            {:status 200 :body "ok"})
+          (do
+            (println "payment failed" result)
+            {:status 423 :body "payment failed"}))))))
 
 (defn not-found [req]
   {:status 404
