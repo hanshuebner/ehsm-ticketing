@@ -23,6 +23,21 @@ angular
             invoiceInformation: "If you want a name and address to appear on your invoice, please enter it here",
             paymillInfo: "Your payment details are not transmitted to our server."
         }
+        $scope.paymillErrors = {
+            'internal_server_error': 'Communication with Paymill failed',
+            'invalid_public_key': 'Invalid public key',
+            'unknown_error': 'Unknown error',
+            '3ds_cancelled': 'User cancelled 3D security password entry',
+            'field_invalid_card_number': 'Missing or invalid credit card number',
+            'field_invalid_card_exp_year': 'Missing or invalid expiry year',
+            'field_invalid_card_exp_month': 'Missing or invalid expiry month',
+            'field_invalid_card_exp': 'Card has expired',
+            'field_invalid_card_cvc': 'Missing or invalid CVC',
+            'field_invalid_card_holder': 'Missing or invalid cardholder name',
+            'field_invalid_account_number': 'Missing or invalid bank account number',
+            'field_invalid_account_holder': 'Missing or invalid bank account holder',
+            'field_invalid_bank_code': 'Missing or invalid bank code'
+        };
         var ticketPrices = { student: 45,
                              regularEarly: 70,
                              regularLate: 95,
@@ -50,7 +65,8 @@ angular
                                         if (error) {
                                             console.log('paymill error', error);
                                             $scope.status = 'error';
-                                            $scope.error = 'payment error: ' + error.apierror;
+                                            
+                                            $scope.error = 'Payment failed: ' + ($scope.paymillErrors[error.apierror] || error.apierror);
                                             $scope.$apply();
                                         } else {
                                             console.log('paymill result', result);
