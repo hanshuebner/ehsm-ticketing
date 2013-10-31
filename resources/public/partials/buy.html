@@ -1,0 +1,184 @@
+<form name="form" class="css-form form-horizontal" novalidate ng-submit="submit()">
+  <fieldset>
+    <label>Select your ticket:</label>
+    <div class="controls control-group">
+      <div class="span3">
+        <label class="radio" bs-tooltip="tooltips.studentTicket" data-placement="right">
+          <input type="radio" ng-model="ticket.type" value="student" ng-click="updateTotal()">
+          Student/unemployed € 45</label>
+        <label class="radio" bs-tooltip="tooltips.earlyTicket" data-placement="right">
+          <input type="radio" ng-model="ticket.type" value="regularEarly"
+                 ng-disabled="!earlyTicketAvailable" ng-click="updateTotal()">
+          Regular (early) € 70</label>
+        <label class="radio" bs-tooltip="tooltips.lateTicket" data-placement="right">
+          <input type="radio" ng-model="ticket.type" value="regularLate"
+                 ng-disabled="earlyTicketAvailable" ng-click="updateTotal()">
+          Regular (late) € 95</label>
+        <label class="radio" bs-tooltip="tooltips.supporterTicket" data-placement="right">
+          <input type="radio" ng-model="ticket.type" value="supporter"
+                 checked ng-click="updateTotal()">
+          Supporter € 272</label>
+        <label class="radio" bs-tooltip="tooltips.goldSupporterTicket" data-placement="right">
+          <input type="radio" ng-model="ticket.type" value="goldSupporter" ng-click="updateTotal()">
+          Gold Supporter € 1337</label>
+      </div>
+    </div>
+    <label>We appreciate your additional donation to support EHSM:</label>
+    <div class="controls controls-row">
+      <div class="span3">
+        <div class="input-append">
+          <span class="add-on">€</span>
+          <input class="span1" type="text" size="5"
+                 name="donation"
+                 ng-model="ticket.donation" bs-tooltip="tooltips.donation" data-placement="right" ng-change="updateTotal()"/>
+        </div>
+      </div>
+    </div>
+    <label>Total amount due:</label>
+    <div class="controls controls-row total-amount">
+      <div class="span3">
+        <span class="amount" ng-cloak>€ {{totalAmount}}</span>
+      </div>
+    </div>
+  </fieldset>
+  <fieldset>
+    <legend>Participant</legend>
+    <div class="controls controls-row">
+      <div class="span3">
+        <label>Name</label>
+        <input class="span3" type="text" required size="20"
+               name="participantName"
+               ng-model="ticket.participantName" bs-tooltip="tooltips.participantName" data-placement="right"/>
+      </div>
+    </div>
+    <div class="controls controls-row">
+      <div class="span3">
+        <label>Project / Company / Affiliation</label>
+        <input class="span3" type="text" size="20"
+               ng-model="ticket.participantProject" bs-tooltip="tooltips.participantProject" data-placement="right"/>
+      </div>
+    </div>
+  </fieldset>
+  <fieldset>
+    <legend>Invoice Information</legend>
+    <div class="controls controls-row">
+      <div class="span3">
+        <label>Email</label>
+        <input class="span3" type="email" required size="20"
+               name="emailAddress"
+               ng-model="ticket.emailAddress" bs-tooltip="tooltips.emailAddress" data-placement="right"/>
+      </div>
+    </div>
+    <div class="controls controls-row">
+      <div class="span3">
+        <label>Recipient</label>
+        <textarea class="span3" rows="5"
+                  name="invoiceInformation"
+                  ng-model="ticket.invoiceInfo" bs-tooltip="tooltips.invoiceInformation" data-placement="right"></textarea>
+      </div>
+    </div>
+  </fieldset>        
+  <fieldset>
+    <legend>Payment</legend>
+    <div class="controls controls-row">
+      <div class="btn-group span4" ng-model="fop" bs-buttons-radio>
+        <button type="button" class="btn" value="cc">Credit card</button>
+        <button type="button" class="btn" value="elv">ELV</button>
+        <!--
+            <button type="button" class="btn" value="bitpay">Bitcoin</button>
+            <button type="button" class="btn" value="wire">Wire</button> -->
+      </div>
+    </div>
+    <div id="payment-form">
+      <div id="payment-form-cc" ng-show="fop == 'cc'">
+        <div class="controls controls-row">
+          <div class="span2">
+            <label class="card-number-label">Credit Card #</label>
+            <input class="card-number span2" type="text" size="20" ng-model="payment.card"
+                   payments-format="card" payments-validate="card" placeholder="XXXX XXXX XXXX XXXX"
+                   ng-required="fop == 'cc'" bs-tooltip="tooltips.paymillInfo" data-placement="right"/>
+          </div>
+          <div class="span1">
+            <label class="card-cvc-label">CVC</label>
+            <input class="card-cvc span1" type="text" size="4" ng-model="payment.cvc"
+                   payments-format="cvc" payments-validate="cvc" placeholder="XXXX"
+                   ng-required="fop == 'cc'" bs-tooltip="tooltips.paymillInfo" data-placement="right"/>
+          </div>
+        </div>
+        <div class="controls controls-row">
+          <div class="span3">
+            <label class="card-holdername-label">Name on Card</label>
+            <input class="card-holdername span3" type="text" size="20" ng-model="payment.name"
+                   ng-required="fop == 'cc'" bs-tooltip="tooltips.paymillInfo" data-placement="right"/>
+          </div>
+        </div>
+        <div class="controls controls-row">
+          <div class="span3">
+            <label class="card-expiry-label">Validity</label>
+            <input class="card-expiry span1" type="text" size="7" placeholder="MM / YY" ng-model="payment.expiry"
+                   payments-format="expiry" payments-validate="expiry"
+                   ng-required="fop == 'cc'" bs-tooltip="tooltips.paymillInfo" data-placement="right"/>
+          </div>
+        </div>
+        <div class="controls controls-row">
+          <div class="span3 payment-provider-info">
+            Payment processing provided by <a href="https://paymill.com/" target="_new"><img src="/img/paymill-RGB.png" width="60" height="13"/></a>.
+          </div>
+        </div>
+      </div>
+      <div id="payment-form-elv" ng-show="fop == 'elv'">
+        <div class="controls controls-row">
+          <div class="span3">
+            <label class="elv-holdername-label">Account Holder</label>
+            <input class="elv-holdername span3" type="text" size="20" value="Max Mustermann" ng-model="payment.name"
+                   ng-required="fop == 'elv'" bs-tooltip="tooltips.paymillInfo" data-placement="right"/>
+          </div>
+        </div>
+        <div class="controls controls-row">
+          <div class="span3">
+            <label class="elv-account-label">Account #</label>
+            <input class="elv-account span3" type="text" size="20" value="1234567890" ng-model="payment.kontonummer"
+                   ng-required="fop == 'elv'" bs-tooltip="tooltips.paymillInfo" data-placement="right"/>
+          </div>
+        </div>
+        <div class="controls controls-row">
+          <div class="span3">
+            <label class="elv-bankcode-label">Bank routing code (BLZ)</label>
+            <input class="elv-bankcode span3" type="text" size="20" value="99999999" ng-model="payment.bankleitzahl"
+                   ng-required="fop == 'elv'" bs-tooltip="tooltips.paymillInfo" data-placement="right"/>
+          </div>
+        </div>
+        <div class="controls controls-row">
+          <div class="span3 payment-provider-info">
+            Payment processing provided by <a href="https://paymill.com/" target="_new"><img src="/img/paymill-RGB.png" width="60" height="13"/></a>.
+          </div>
+        </div>
+      </div>
+      <div id="payment-form-bitpay" ng-show="fop == 'bitpay'">
+        <div class="controls controls-row">
+          <div class="span3 notice">
+            Payment by Bitcoin is not yet available, please check back later.
+          </div>
+        </div>
+        <div class="controls controls-row">
+          <div class="span3 payment-provider-info">
+            Payment processing provided by <a href="https://bitpay.com/" target="_new"><img src="/img/bitpay-logo.jpeg" width="52" height="40"/></a>.
+          </div>
+        </div>
+      </div>
+      <div id="payment-form-wire" ng-show="fop == 'wire'">
+        <div class="controls controls-row">
+          <div class="span3 notice">
+            We send you an invoice, you send the money by
+            direct transfer to our bank account.
+          </div>
+        </div>
+      </div>
+    </div>
+  </fieldset>
+  <div class="controls controls-row">
+    <div class="span4">
+      <button ng-disabled="form.$invalid" class="submit-button btn btn-primary" type="submit" ng-cloak>{{submitButtonLabel()}}</button>
+    </div>
+  </div>
+</form>

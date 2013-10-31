@@ -8,6 +8,7 @@
             [ring.middleware.resource :as ring-resource]
             [ring.middleware.session :as ring-session]
             [ring.middleware.file-info :as ring-file-info]
+            [ring.util.response :as ring-response]
             [clj-time.core :as time-core]
             [clj-time.format :as time-format]
             [clj-paymill.net :as paymill-net]
@@ -143,15 +144,25 @@ A ticket or EHSM has been sold!  Please see the attachments for details.
             {:status 200 :body "ok"})
           (do
             (println "payment failed" result)
-            {:status 423 :body "payment failed"}))))))
+            {:status 423 :body result}))))))
 
 (defn not-found [req]
   {:status 404
    :body "Not found."})
 
+(defn client-side-route [req]
+  (ring-response/resource-response "index.html" {:root "public"}))
+
 (defroutes all-routes
   (POST "/paymill-callback" [] paymill-callback)
   (POST "/pay" [] pay)
+  ;; Enumerating all the AngularJS routes here is kind of cheesy, but
+  ;; I'm too tired to find a more beautiful way right now.
+  (GET "/" [] client-side-route)
+  (GET "/buy" [] client-side-route)
+  (GET "/processing" [] client-side-route)
+  (GET "/done" [] client-side-route)
+  (GET "/error" [] client-side-route)
   (route/not-found not-found))
 
 (defn app []

@@ -2,8 +2,16 @@ var PAYMILL_PUBLIC_KEY = '8585298099281237d892403846aedaf0';
 
 angular
     .module('ehsm', ['angularPayments', '$strap.directives'])
-    .controller('TicketsController', ['$scope', '$http', function ($scope, $http) {
-        $scope.status = 'idle';
+    .config(function($routeProvider, $locationProvider) {
+        $locationProvider.html5Mode(true);
+        $routeProvider
+            .when('/processing', { templateUrl: 'partials/processing.html', })
+            .when('/error', { templateUrl: 'partials/error.html', })
+            .when('/done', { templateUrl: 'partials/done.html', })
+            .otherwise({ templateUrl: '/partials/buy.html' });
+    })
+    .controller('TicketsController', ['$scope', '$http', '$location', function ($scope, $http, $location) {
+        $location.path('/buy');
 
         $scope.ticket = localStorage.ticket ? JSON.parse(localStorage.ticket) : { donation: 0, type: 'supporter'};
         $scope.payment = localStorage.payment ? JSON.parse(localStorage.payment) : {};
@@ -56,15 +64,20 @@ angular
             }
         }
 
+        $scope.goBack = function () {
+            window.history.back();            
+        }
+
         $scope.submit = function () {
             $scope.error = '';
+            $location.path('/pay');
 
             function createPaymillToken(request) {
                 paymill.createToken(request,
                                     function (error, result) {
                                         if (error) {
+                                            $location.path('/error').replace();
                                             console.log('paymill error', error);
-                                            $scope.status = 'error';
                                             
                                             $scope.error = 'Payment failed: ' + ($scope.paymillErrors[error.apierror] || error.apierror);
                                             $scope.$apply();
@@ -75,7 +88,13 @@ angular
                                                                 paymillToken: result.token })
                                                 .success(function () {
                                                     console.log('payment succeeded');
-                                                    $scope.status = 'done';
+                                                    $location.path('/done').replace();
+                                                })
+                                                .error(function (data) {
+                                                    $location.path('/error').replace();
+                                                    console.log('server side payment error', data);
+                                                    $scope.error = 'Payment failed: ' + data;
+                                                    $scope.$$phase || $scope.$apply();
                                                 });
                                         }
                                     });
@@ -83,13 +102,13 @@ angular
 
             switch ($scope.fop) {
             case 'elv':
-                $scope.status = 'processing';
+                $location.path('/processing');
                 createPaymillToken({ number: $scope.payment.kontonummer,
                                      bank: $scope.payment.bankleitzahl,
                                      accountholder: $scope.payment.name });
                 break;
             case 'cc':
-                $scope.status = 'processing';
+                $location.path('/processing');
                 createPaymillToken({ number: $scope.payment.card,
                                      cvc: $scope.payment.cvc,
                                      exp_month: parseInt($scope.payment.expiry.substr(0, 2)),
@@ -98,7 +117,7 @@ angular
                                      currency: 'EUR' });
                 break;
             default:
-                $scope.status = 'error';
+                $location.path('/error');
                 $scope.error = "FOP not supported yet";
                 console.log($scope.error);
             }
