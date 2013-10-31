@@ -91,7 +91,7 @@
          file-basename (format "%s/invoice-%04d" invoices-directory invoice-number)
          pdf-pathname (str file-basename ".pdf")
          json-pathname (str file-basename ".json")]
-     (create-invoice-pdf pdf-pathname invoice-number (:invoiceInfo order) ticket (:donation order))
+     (create-invoice-pdf pdf-pathname invoice-number (or (:invoiceInfo order) "") ticket (:donation order))
      (spit json-pathname (json/generate-string {:invoiceNumber invoice-number
                                                 :order order
                                                 :ticket ticket

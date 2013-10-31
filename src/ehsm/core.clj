@@ -127,7 +127,7 @@ A ticket or EHSM has been sold!  Please see the attachments for details.
 
 (defn pay [req]
   (let [{:keys [paymillToken order]} (:body req)
-        {:keys [donation type participantName participantProject emailAddress invoiceInfo]} order]
+        {:keys [donation type]} order]
     (if (and (= type "regularEarly")
              (not (early-available?)))
       {:status 423 :body "early registration is closed"}
