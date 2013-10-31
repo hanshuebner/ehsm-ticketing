@@ -3,6 +3,8 @@ var PAYMILL_PUBLIC_KEY = '8585298099281237d892403846aedaf0';
 angular
     .module('ehsm', ['angularPayments', '$strap.directives'])
     .controller('TicketsController', ['$scope', '$http', function ($scope, $http) {
+        $scope.status = 'idle';
+
         $scope.ticket = localStorage.ticket ? JSON.parse(localStorage.ticket) : { donation: 0, type: 'supporter'};
         $scope.payment = localStorage.payment ? JSON.parse(localStorage.payment) : {};
 
@@ -47,6 +49,7 @@ angular
                                     function (error, result) {
                                         if (error) {
                                             console.log('paymill error', error);
+                                            $scope.status = 'error';
                                             $scope.error = 'payment error: ' + error.apierror;
                                             $scope.$apply();
                                         } else {
@@ -56,6 +59,7 @@ angular
                                                                 paymillToken: result.token })
                                                 .success(function () {
                                                     console.log('payment succeeded');
+                                                    $scope.status = 'done';
                                                 });
                                         }
                                     });
@@ -63,11 +67,13 @@ angular
 
             switch ($scope.fop) {
             case 'elv':
+                $scope.status = 'processing';
                 createPaymillToken({ number: $scope.payment.kontonummer,
                                      bank: $scope.payment.bankleitzahl,
                                      accountholder: $scope.payment.name });
                 break;
             case 'cc':
+                $scope.status = 'processing';
                 createPaymillToken({ number: $scope.payment.card,
                                      cvc: $scope.payment.cvc,
                                      exp_month: parseInt($scope.payment.expiry.substr(0, 2)),
@@ -76,6 +82,7 @@ angular
                                      currency: 'EUR' });
                 break;
             default:
+                $scope.status = 'error';
                 $scope.error = "FOP not supported yet";
                 console.log($scope.error);
             }
