@@ -21,6 +21,10 @@ input.ng-invalid-required { background: #FFE4E1; }
 }
 
 .total-amount {
+    margin-top: 1em;
+    margin-bottom: 2em;
+}
+.total-amount .amount {
     font-size: 20pt;
     background: white;
     padding: 10px;
