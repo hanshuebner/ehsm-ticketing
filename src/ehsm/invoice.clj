@@ -92,8 +92,12 @@
          pdf-pathname (str file-basename ".pdf")
          json-pathname (str file-basename ".json")]
      (create-invoice-pdf pdf-pathname invoice-number (:invoiceInfo order) ticket (:donation order))
-     (spit json-pathname (json/generate-string {:order order :ticket ticket :paymentResult payment-result} {:pretty true}))
-     pdf-pathname)))
+     (spit json-pathname (json/generate-string {:invoiceNumber invoice-number
+                                                :order order
+                                                :ticket ticket
+                                                :paymentResult payment-result}
+                                               {:pretty true}))
+     [json-pathname pdf-pathname])))
 
 #_
 (create-invoice-pdf

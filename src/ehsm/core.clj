@@ -12,6 +12,7 @@
             [clj-time.format :as time-format]
             [clj-paymill.net :as paymill-net]
             [clj-paymill.client :as paymill-client]
+            [cheshire.core :as json]
             [ehsm.invoice :as invoice]
             [postal.core :as postal]))
 
@@ -20,6 +21,7 @@
 
 (defonce smtp-host "localhost")
 (defonce email-from "EHSM 2014 Tickets <tickets@ehsm.eu>")
+(defonce admin-email-address "tickets@ehsm.eu")
 
 (defonce tickets {"student" {:price 45 :description "Student / Unemployed"}
                   "regularEarly" {:price 70 :description "Regular (Early registration)"}
@@ -105,6 +107,24 @@ See you at DESY in June!
                                 :content invoice-pdf
                                 :content-type "application/pdf"}]}))
 
+(defn send-admin-notice [order json-pathname invoice-pdf-pathname]
+  (postal/send-message ^{:host smtp-host}
+                       {:from email-from
+                        :to admin-email-address
+                        :subject "EHSM ticket sold"
+                        :body [{:type "text/plain"
+                                :content "Hi,
+
+A ticket or EHSM has been sold!  Please see the attachments for details.
+
+-The EHSM Team"}
+                               {:type :inline
+                                :content invoice-pdf-pathname
+                                :content-type "application/pdf"}
+                               {:type :inline
+                                :content json-pathname
+                                :content-type "application/json"}]}))
+
 (defn pay [req]
   (let [{:keys [paymillToken order]} (:body req)
         {:keys [donation type participantName participantProject emailAddress invoiceInfo]} order]
@@ -117,8 +137,9 @@ See you at DESY in June!
                                (str " + " donation " EUR donation")))
             result (make-paymill-transaction {:token paymillToken :amount amount :currency "EUR" :description description})]
         (if (= (:response_code result) 20000)
-          (let [invoice-pdf (invoice/make-invoice order (tickets type) result)]
-            (send-invoice order invoice-pdf)
+          (let [[json-pathname invoice-pdf-pathname] (invoice/make-invoice order (tickets type) result)]
+            (send-invoice order invoice-pdf-pathname)
+            (send-admin-notice order json-pathname invoice-pdf-pathname)
             {:status 200 :body "ok"})
           (do
             (println "payment failed" result)
