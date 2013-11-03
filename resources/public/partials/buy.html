@@ -81,7 +81,7 @@
   <fieldset>
     <legend>Payment</legend>
     <div class="controls controls-row">
-      <div class="btn-group span4" ng-model="fop" bs-buttons-radio>
+      <div class="btn-group span6" ng-model="fop" bs-buttons-radio>
         <button type="button" class="btn" value="cc">Credit card</button>
         <!--
         <button type="button" class="btn" value="elv">ELV</button>
@@ -94,13 +94,15 @@
         <div class="controls controls-row">
           <div class="span2">
             <label class="card-number-label">Credit Card #</label>
-            <input class="card-number span2" type="text" size="20" ng-model="payment.card"
+            <input class="card-number span3" type="text" size="20" ng-model="payment.card"
                    payments-format="card" payments-validate="card" placeholder="XXXX XXXX XXXX XXXX"
                    ng-required="fop == 'cc'" bs-tooltip="tooltips.paymillInfo" data-placement="right"/>
           </div>
+        </div>
+        <div class="controls controls-row">
           <div class="span1">
             <label class="card-cvc-label">CVC</label>
-            <input class="card-cvc span1" type="text" size="4" ng-model="payment.cvc"
+            <input class="card-cvc span1" type="text" size="9" ng-model="payment.cvc"
                    payments-format="cvc" payments-validate="cvc" placeholder="XXXX"
                    ng-required="fop == 'cc'" bs-tooltip="tooltips.paymillInfo" data-placement="right"/>
           </div>
@@ -115,14 +117,14 @@
         <div class="controls controls-row">
           <div class="span3">
             <label class="card-expiry-label">Validity</label>
-            <input class="card-expiry span1" type="text" size="7" placeholder="MM / YY" ng-model="payment.expiry"
+            <input class="card-expiry span2" type="text" size="7" placeholder="MM / YY" ng-model="payment.expiry"
                    payments-format="expiry" payments-validate="expiry"
                    ng-required="fop == 'cc'" bs-tooltip="tooltips.paymillInfo" data-placement="right"/>
           </div>
         </div>
         <div class="controls controls-row">
-          <div class="span3 payment-provider-info">
-            Payment processing provided by <a href="https://paymill.com/" target="_new"><img src="/img/paymill-RGB.png" width="60" height="13"/></a>.
+          <div class="span6 payment-provider-info">
+            Payment processing provided by <a href="https://paymill.com/" target="_new"><img src="/img/paymill-RGB.png" style="width: 60px; height: 11px"/></a>.
           </div>
         </div>
       </div>
