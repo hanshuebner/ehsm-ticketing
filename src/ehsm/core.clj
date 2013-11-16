@@ -171,12 +171,13 @@ A ticket or EHSM has been sold!  Please see the attachments for details.
 (defn make-wire-invoice [req]
   (make-invoice (:order req)
                   {}
-                  "Please send the invoice amount by wire transfer to
-our bank account: Exceptionally Hard and Soft Meeting e.V, IBAN:
-DE12345678901234567890, BIC: XXXXXXX.  Put \"EHSM\" and your invoice
-number into the reference field so that we can associate your payment
-correctly.
-"))    
+                  "Please send the invoice amount by wire transfer to our bank account:
+
+Exceptionally Hard and Soft Meeting e.V
+IBAN: DE12345678901234567890
+BIC: XXXXXXX
+
+Put \"EHSM\" and your invoice number into the reference field so that we can associate your payment correctly."))    
 
 (defn not-found [req]
   {:status 404
@@ -194,7 +195,8 @@ correctly.
   (GET "/" [] client-side-route)
   (GET "/buy" [] client-side-route)
   (GET "/processing" [] client-side-route)
-  (GET "/done" [] client-side-route)
+  (GET "/registered" [] client-side-route)
+  (GET "/paid" [] client-side-route)
   (GET "/error" [] client-side-route)
   (route/not-found not-found))
 
