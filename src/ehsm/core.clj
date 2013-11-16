@@ -126,25 +126,57 @@ A ticket or EHSM has been sold!  Please see the attachments for details.
                                 :content json-pathname
                                 :content-type "application/json"}]}))
 
-(defn pay [req]
-  (let [{:keys [paymillToken order]} (:body req)
-        {:keys [donation type]} order]
-    (if (and (= type "regularEarly")
-             (not (early-available?)))
-      {:status 423 :body "early registration is closed"}
-      (let [amount (* (+ (:price (tickets type)) donation) 100)
-            description (str "EHSM " (:description (tickets type)) " Ticket"
-                             (when (and donation (pos? donation))
-                               (str " + " donation " EUR donation")))
-            result (make-paymill-transaction {:token paymillToken :amount amount :currency "EUR" :description description})]
-        (if (= (:response_code result) 20000)
-          (let [[json-pathname invoice-pdf-pathname] (invoice/make-invoice order (tickets type) result)]
-            (send-invoice order invoice-pdf-pathname)
-            (send-admin-notice order json-pathname invoice-pdf-pathname)
-            {:status 200 :body "ok"})
-          (do
-            (println "payment failed" result)
-            {:status 423 :body result}))))))
+(defn prepare-order [order]
+  (into order 
+        (let [{:keys [donation type]} order]
+          (if (and (= type "regularEarly")
+                   (not (early-available?)))
+            {:status "ERROR"
+             :message "early registration is closed"}
+            {:status "OK"
+             :ticket (tickets type)
+             :amount (* (+ (:price (tickets type)) donation) 100)
+             :description (str "EHSM " (:description (tickets type)) " Ticket"
+                               (when (and donation (pos? donation))
+                                 (str " + " donation " EUR donation")))}))))
+
+(defn wrap-prepare-order [handler]
+  (fn [req]
+    (let [order (prepare-order (:order (:body req)))]
+      (if (= (:status order) "OK")
+        (handler (into req {:order order}))
+        {:status 423 :body (:message order)}))))
+
+(defn make-invoice [order payment-result payment-info]
+  (let [[json-pathname invoice-pdf-pathname] (invoice/make-invoice order payment-result payment-info)]
+    (send-invoice order invoice-pdf-pathname)
+    (send-admin-notice order json-pathname invoice-pdf-pathname)
+    {:status 200 :body "ok"}))
+
+(defn pay-paymill [req]
+  (let [paymillToken (:paymillToken (:body req))
+        order (:order req)]
+    (let [paymill-result (make-paymill-transaction {:token paymillToken
+                                                    :amount (:amount order)
+                                                    :currency "EUR"
+                                                    :description (:description order)})]
+      (if (= (:response_code paymill-result) 20000)
+        (make-invoice order 
+                      (into paymill-result {:type "paymill"})
+                      "Your payment has been received through Paymill.")
+        (do
+          (println "payment failed" paymill-result)
+          {:status 423 :body paymill-result})))))
+
+(defn make-wire-invoice [req]
+  (make-invoice (:order req)
+                  {}
+                  "Please send the invoice amount by wire transfer to
+our bank account: Exceptionally Hard and Soft Meeting e.V, IBAN:
+DE12345678901234567890, BIC: XXXXXXX.  Put \"EHSM\" and your invoice
+number into the reference field so that we can associate your payment
+correctly.
+"))    
 
 (defn not-found [req]
   {:status 404
@@ -155,7 +187,8 @@ A ticket or EHSM has been sold!  Please see the attachments for details.
 
 (defroutes all-routes
   (POST "/paymill-callback" [] paymill-callback)
-  (POST "/pay" [] pay)
+  (POST "/pay-paymill" [] (wrap-prepare-order pay-paymill))
+  (POST "/make-wire-invoice" [] (wrap-prepare-order make-wire-invoice))
   ;; Enumerating all the AngularJS routes here is kind of cheesy, but
   ;; I'm too tired to find a more beautiful way right now.
   (GET "/" [] client-side-route)

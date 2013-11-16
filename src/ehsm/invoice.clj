@@ -14,8 +14,9 @@
 (defn vat [euro-amount]
   (/ (floor (float (* (/ (* euro-amount 100) 11900) 1900))) 100))
 
-(defn create-invoice-fo [invoice-number recipient ticket donation]
-  (let [price (:price ticket)
+(defn create-invoice-fo [invoice-number order payment-info]
+  (let [{:keys [invoiceInfo ticket donation]} order
+        price (:price ticket)
         base-price (base-price price)
         vat (vat price)
         donation (if (and donation (pos? donation))
@@ -35,7 +36,7 @@
                "EHSM e.V.")
      (fo/block {:space-before.optimum "100pt"
                 :space-after.optimum "20pt"}
-               (map fo/block (string/split recipient #"\n")))
+               (map fo/block (string/split (or invoiceInfo "") #"\n")))
      (fo/block {:font-weight "bold"
                 :font-size "16"
                 :space-after.optimum "20pt"}
@@ -64,10 +65,10 @@
                   (fo/block {:text-align "right"}
                             (format "€ %.2f" total))]]))
      (fo/block {:space-before.optimum "35pt"}
-               "Your payment has been received through Paymill.  We're looking forward to seeing you at the conference!"))))
+               (str payment-info "  We're looking forward to seeing you at the conference!")))))
 
-(defn create-invoice-pdf [pathname invoice-number recipient ticket donation]
-  (fo/write-pdf! (create-invoice-fo invoice-number recipient ticket donation) pathname))
+(defn create-invoice-pdf [pathname & args]
+  (fo/write-pdf! (apply create-invoice-fo args) pathname))
 
 (def invoice-directory (java.io.File. "invoices"))
 
@@ -85,16 +86,18 @@
 (defn next-invoice-number []
   (swap! last-invoice-number inc))
 
-(defn make-invoice [order ticket payment-result]
+(defn make-invoice [order payment-result payment-info]
   (io!
    (let [invoice-number (next-invoice-number)
          file-basename (format "%s/invoice-%04d" invoices-directory invoice-number)
          pdf-pathname (str file-basename ".pdf")
          json-pathname (str file-basename ".json")]
-     (create-invoice-pdf pdf-pathname invoice-number (or (:invoiceInfo order) "") ticket (:donation order))
+     (create-invoice-pdf pdf-pathname
+                         invoice-number
+                         order
+                         payment-info)
      (spit json-pathname (json/generate-string {:invoiceNumber invoice-number
                                                 :order order
-                                                :ticket ticket
                                                 :paymentResult payment-result}
                                                {:pretty true}))
      [json-pathname pdf-pathname])))
