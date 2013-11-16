@@ -65,7 +65,8 @@
                   (fo/block {:text-align "right"}
                             (format "€ %.2f" total))]]))
      (fo/block {:space-before.optimum "35pt"}
-               (str payment-info "  We're looking forward to seeing you at the conference!")))))
+               (map fo/block (string/split (or payment-info "") #"\n")))
+     (fo/block "We're looking forward to seeing you at the conference!"))))
 
 (defn create-invoice-pdf [pathname & args]
   (fo/write-pdf! (apply create-invoice-fo args) pathname))
