@@ -174,8 +174,8 @@ A ticket or EHSM has been sold!  Please see the attachments for details.
                   "Please send the invoice amount by wire transfer to our bank account:
 
 Exceptionally Hard and Soft Meeting e.V
-IBAN: DE12345678901234567890
-BIC: XXXXXXX
+IBAN: DE54430609671157246900
+BIC: GENODEM1GLS
 
 Put \"EHSM\" and your invoice number into the reference field so that we can associate your payment correctly."))    
 
