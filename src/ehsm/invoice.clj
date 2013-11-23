@@ -79,7 +79,7 @@
                  (if-let [invoice-number-string (first (rest (re-matches #"invoice-0*(\d+).json" (.getName file))))]
                    (read-string invoice-number-string)
                    previous-max)))
-          1
+          0
           (file-seq invoice-directory)))
 
 (def last-invoice-number (atom (find-last-invoice-number)))
