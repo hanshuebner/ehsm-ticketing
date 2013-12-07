@@ -18,7 +18,7 @@ angular
         $scope.payment = localStorage.payment ? JSON.parse(localStorage.payment) : {};
 
         $scope.totalAmount = 0;
-        $scope.fop = 'wire';
+        $scope.fop = 'cc';
 
         $scope.fopChanged = function (fop) {
             $scope.fop = fop;
