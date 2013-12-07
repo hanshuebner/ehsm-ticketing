@@ -1,4 +1,4 @@
-var PAYMILL_PUBLIC_KEY = '8585298099281237d892403846aedaf0';
+var PAYMILL_PUBLIC_KEY = '8a8394c24204b3f40142065727d60378';
 
 angular
     .module('ehsm', ['angularPayments', '$strap.directives'])
