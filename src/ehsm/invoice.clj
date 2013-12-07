@@ -1,6 +1,7 @@
 (ns ehsm.invoice
   (:use [clojure.contrib.math :only [ceil floor]])
-  (:require [clj-time.format :as time-format]
+  (:require [clojure.tools.logging :as log]
+            [clj-time.format :as time-format]
             [clj-time.core :as time-core]
             [clj-fo.fo :as fo]
             [clojure.string :as string]
@@ -88,6 +89,7 @@
   (swap! last-invoice-number inc))
 
 (defn make-invoice [order payment-result payment-info]
+  (log/info "make-invoice")
   (io!
    (let [invoice-number (next-invoice-number)
          file-basename (format "%s/invoice-%04d" invoices-directory invoice-number)

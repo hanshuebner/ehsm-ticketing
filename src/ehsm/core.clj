@@ -1,6 +1,7 @@
 (ns ehsm.core
   (:use compojure.core)
-  (:require [compojure.route :as route]
+  (:require [clojure.tools.logging :as log]
+            [compojure.route :as route]
             [compojure.handler :as handler]
             [org.httpkit.server :as server]
             [ring.middleware.json :as ring-json]
@@ -18,7 +19,9 @@
             [postal.core :as postal]))
 
 (defonce default-port 7676)
-(defonce paymill-private-key "f0a966a7f4d01204c4712def21a9f73d")
+(defonce paymill-private-key (or (System/getenv "PAYMILL_PRIVATE_KEY")
+                                 (log/warn "warning, using compiled-in API test key")
+                                 "f0a966a7f4d01204c4712def21a9f73d"))
 
 (defonce smtp-host "localhost")
 (defonce email-from "EHSM 2014 Tickets <tickets@ehsm.eu>")
@@ -41,6 +44,7 @@
    :body "ok"})
 
 (defn make-paymill-transaction [request]
+  (log/info "creating paymill transaction, request is" (pr-str request))
   (paymill-net/paymill-request paymill-private-key :post
                                "transactions"
                                {"amount" (:amount request)
@@ -90,6 +94,7 @@
                     50600 "Duplicate transaction."})
 
 (defn send-invoice [order invoice-pdf]
+  (log/info "sending invoice")
   (postal/send-message ^{:host smtp-host}
                        {:from email-from
                         :to (:emailAddress order)
@@ -109,6 +114,7 @@ See you at DESY in June!
                                 :content-type "application/pdf"}]}))
 
 (defn send-admin-notice [order json-pathname invoice-pdf-pathname]
+  (log/info "sending admin notice")
   (postal/send-message ^{:host smtp-host}
                        {:from email-from
                         :to admin-email-address
@@ -156,10 +162,12 @@ A ticket or EHSM has been sold!  Please see the attachments for details.
 (defn pay-paymill [req]
   (let [paymillToken (:paymillToken (:body req))
         order (:order req)]
+    (log/info "pay-paymill, token" paymillToken "order" (pr-str (:order req)))
     (let [paymill-result (make-paymill-transaction {:token paymillToken
                                                     :amount (:amount order)
                                                     :currency "EUR"
                                                     :description (:description order)})]
+      (log/info "transaction created, paymill's response is" (pr-str paymill-result))
       (if (= (:response_code paymill-result) 20000)
         (make-invoice order 
                       (into paymill-result {:type "paymill"})
