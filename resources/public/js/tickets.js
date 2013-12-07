@@ -35,7 +35,6 @@ angular
             participantProject: "We're going to print this onto your badge, too",
             emailAddress: "We're going to send your invoice, payment confirmation and updates about EHSM 2014 to this email address",
             invoiceInformation: "If you want a name and address to appear on your invoice, please enter it here",
-            paymillInfo: "Your payment details are not transmitted to our server.",
             donation: "If you want to donate without buying a ticket, please get in touch and we'll work something out"
         }
         $scope.paymillErrors = {
