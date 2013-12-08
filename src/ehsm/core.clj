@@ -20,8 +20,8 @@
 
 (defonce default-port 7676)
 (defonce paymill-private-key (or (System/getenv "PAYMILL_PRIVATE_KEY")
-                                 (log/warn "warning, using compiled-in API test key")
-                                 "f0a966a7f4d01204c4712def21a9f73d"))
+                                 (do (log/warn "warning, using compiled-in API test key")
+                                     "f0a966a7f4d01204c4712def21a9f73d")))
 
 (defonce smtp-host "localhost")
 (defonce email-from "EHSM 2014 Tickets <tickets@ehsm.eu>")
