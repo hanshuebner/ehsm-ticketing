@@ -1,6 +1,7 @@
 (ns ehsm.core
   (:use compojure.core)
-  (:require [compojure.route :as route]
+  (:require [clojure.tools.logging :as log]
+            [compojure.route :as route]
             [compojure.handler :as handler]
             [org.httpkit.server :as server]
             [ring.middleware.json :as ring-json]
@@ -18,7 +19,9 @@
             [postal.core :as postal]))
 
 (defonce default-port 7676)
-(defonce paymill-private-key "f0a966a7f4d01204c4712def21a9f73d")
+(defonce paymill-private-key (or (System/getenv "PAYMILL_PRIVATE_KEY")
+                                 (log/warn "warning, using compiled-in API test key")
+                                 "f0a966a7f4d01204c4712def21a9f73d"))
 
 (defonce smtp-host "localhost")
 (defonce email-from "EHSM 2014 Tickets <tickets@ehsm.eu>")
@@ -41,6 +44,7 @@
    :body "ok"})
 
 (defn make-paymill-transaction [request]
+  (log/info "creating paymill transaction, request is" (pr-str request))
   (paymill-net/paymill-request paymill-private-key :post
                                "transactions"
                                {"amount" (:amount request)
@@ -90,6 +94,7 @@
                     50600 "Duplicate transaction."})
 
 (defn send-invoice [order invoice-pdf]
+  (log/info "sending invoice")
   (postal/send-message ^{:host smtp-host}
                        {:from email-from
                         :to (:emailAddress order)
@@ -109,6 +114,7 @@ See you at DESY in June!
                                 :content-type "application/pdf"}]}))
 
 (defn send-admin-notice [order json-pathname invoice-pdf-pathname]
+  (log/info "sending admin notice")
   (postal/send-message ^{:host smtp-host}
                        {:from email-from
                         :to admin-email-address
@@ -126,25 +132,60 @@ A ticket or EHSM has been sold!  Please see the attachments for details.
                                 :content json-pathname
                                 :content-type "application/json"}]}))
 
-(defn pay [req]
-  (let [{:keys [paymillToken order]} (:body req)
-        {:keys [donation type]} order]
-    (if (and (= type "regularEarly")
-             (not (early-available?)))
-      {:status 423 :body "early registration is closed"}
-      (let [amount (* (+ (:price (tickets type)) donation) 100)
-            description (str "EHSM " (:description (tickets type)) " Ticket"
-                             (when (and donation (pos? donation))
-                               (str " + " donation " EUR donation")))
-            result (make-paymill-transaction {:token paymillToken :amount amount :currency "EUR" :description description})]
-        (if (= (:response_code result) 20000)
-          (let [[json-pathname invoice-pdf-pathname] (invoice/make-invoice order (tickets type) result)]
-            (send-invoice order invoice-pdf-pathname)
-            (send-admin-notice order json-pathname invoice-pdf-pathname)
-            {:status 200 :body "ok"})
-          (do
-            (println "payment failed" result)
-            {:status 423 :body result}))))))
+(defn prepare-order [order]
+  (into order 
+        (let [{:keys [donation type]} order]
+          (if (and (= type "regularEarly")
+                   (not (early-available?)))
+            {:status "ERROR"
+             :message "early registration is closed"}
+            {:status "OK"
+             :ticket (tickets type)
+             :amount (* (+ (:price (tickets type)) donation) 100)
+             :description (str "EHSM " (:description (tickets type)) " Ticket"
+                               (when (and donation (pos? donation))
+                                 (str " + " donation " EUR donation")))}))))
+
+(defn wrap-prepare-order [handler]
+  (fn [req]
+    (let [order (prepare-order (:order (:body req)))]
+      (if (= (:status order) "OK")
+        (handler (into req {:order order}))
+        {:status 423 :body (:message order)}))))
+
+(defn make-invoice [order payment-result payment-info]
+  (let [[json-pathname invoice-pdf-pathname] (invoice/make-invoice order payment-result payment-info)]
+    (send-invoice order invoice-pdf-pathname)
+    (send-admin-notice order json-pathname invoice-pdf-pathname)
+    {:status 200 :body "ok"}))
+
+(defn pay-paymill [req]
+  (let [paymillToken (:paymillToken (:body req))
+        order (:order req)]
+    (log/info "pay-paymill, token" paymillToken "order" (pr-str (:order req)))
+    (let [paymill-result (make-paymill-transaction {:token paymillToken
+                                                    :amount (:amount order)
+                                                    :currency "EUR"
+                                                    :description (:description order)})]
+      (log/info "transaction created, paymill's response is" (pr-str paymill-result))
+      (if (= (:response_code paymill-result) 20000)
+        (make-invoice order 
+                      (into paymill-result {:type "paymill"})
+                      "Your payment has been received through Paymill.")
+        (do
+          (println "payment failed" paymill-result)
+          {:status 423 :body paymill-result})))))
+
+(defn make-wire-invoice [req]
+  (make-invoice (:order req)
+                  {}
+                  "Please send the invoice amount by wire transfer to our bank account:
+
+Exceptionally Hard and Soft Meeting e.V
+IBAN: DE54430609671157246900
+BIC: GENODEM1GLS
+
+Put \"EHSM\" and your invoice number into the reference field so that we can associate your payment correctly."))    
 
 (defn not-found [req]
   {:status 404
@@ -155,13 +196,15 @@ A ticket or EHSM has been sold!  Please see the attachments for details.
 
 (defroutes all-routes
   (POST "/paymill-callback" [] paymill-callback)
-  (POST "/pay" [] pay)
+  (POST "/pay-paymill" [] (wrap-prepare-order pay-paymill))
+  (POST "/make-wire-invoice" [] (wrap-prepare-order make-wire-invoice))
   ;; Enumerating all the AngularJS routes here is kind of cheesy, but
   ;; I'm too tired to find a more beautiful way right now.
   (GET "/" [] client-side-route)
   (GET "/buy" [] client-side-route)
   (GET "/processing" [] client-side-route)
-  (GET "/done" [] client-side-route)
+  (GET "/registered" [] client-side-route)
+  (GET "/paid" [] client-side-route)
   (GET "/error" [] client-side-route)
   (route/not-found not-found))
 

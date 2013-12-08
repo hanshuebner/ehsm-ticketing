@@ -1,4 +1,4 @@
-var PAYMILL_PUBLIC_KEY = '8585298099281237d892403846aedaf0';
+var PAYMILL_PUBLIC_KEY = '8a8394c24204b3f40142065727d60378';
 
 angular
     .module('ehsm', ['angularPayments', '$strap.directives'])
@@ -7,7 +7,8 @@ angular
         $routeProvider
             .when('/processing', { templateUrl: 'partials/processing.html', })
             .when('/error', { templateUrl: 'partials/error.html', })
-            .when('/done', { templateUrl: 'partials/done.html', })
+            .when('/paid', { templateUrl: 'partials/paid.html', })
+            .when('/registered', { templateUrl: 'partials/registered.html', })
             .otherwise({ templateUrl: '/partials/buy.html' });
     })
     .controller('TicketsController', ['$scope', '$http', '$location', function ($scope, $http, $location) {
@@ -18,6 +19,11 @@ angular
 
         $scope.totalAmount = 0;
         $scope.fop = 'cc';
+
+        $scope.fopChanged = function (fop) {
+            $scope.fop = fop;
+        }
+
         $scope.earlyTicketAvailable = moment().isBefore('2014-02-02');
         $scope.tooltips = {
             studentTicket: "You will have to bring a valid student ID or unemployment confirmation to the conference",
@@ -29,7 +35,7 @@ angular
             participantProject: "We're going to print this onto your badge, too",
             emailAddress: "We're going to send your invoice, payment confirmation and updates about EHSM 2014 to this email address",
             invoiceInformation: "If you want a name and address to appear on your invoice, please enter it here",
-            paymillInfo: "Your payment details are not transmitted to our server."
+            donation: "If you want to donate without buying a ticket, please get in touch and we'll work something out"
         }
         $scope.paymillErrors = {
             'internal_server_error': 'Communication with Paymill failed',
@@ -84,11 +90,11 @@ angular
                                         } else {
                                             console.log('paymill result', result);
                                             $http
-                                                .post('/pay', { order: $scope.ticket,
-                                                                paymillToken: result.token })
+                                                .post('/pay-paymill', { order: $scope.ticket,
+                                                                        paymillToken: result.token })
                                                 .success(function () {
                                                     console.log('payment succeeded');
-                                                    $location.path('/done').replace();
+                                                    $location.path('/paid').replace();
                                                 })
                                                 .error(function (data) {
                                                     $location.path('/error').replace();
@@ -115,6 +121,15 @@ angular
                                      exp_year: 2000 + parseInt($scope.payment.expiry.substr(5)),
                                      amount_int: $scope.totalAmount * 100,
                                      currency: 'EUR' });
+                break;
+            case 'wire':
+                $location.path('/processing');
+                $http
+                    .post('/make-wire-invoice', { order: $scope.ticket })
+                    .success(function () {
+                        console.log('invoice created');
+                        $location.path('/paid').replace();
+                    });
                 break;
             default:
                 $location.path('/error');

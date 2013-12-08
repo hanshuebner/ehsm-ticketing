@@ -81,12 +81,11 @@
   <fieldset>
     <legend>Payment</legend>
     <div class="controls controls-row">
-      <div class="btn-group span6" ng-model="fop" bs-buttons-radio>
+      <div class="btn-group span6" ng-model="fop" ng-change="fopChanged(fop)" bs-buttons-radio>
         <button type="button" class="btn" value="cc">Credit card</button>
-        <!--
-        <button type="button" class="btn" value="elv">ELV</button>
-        <button type="button" class="btn" value="bitpay">Bitcoin</button>
-        <button type="button" class="btn" value="wire">Wire</button> -->
+<!--        <button type="button" class="btn" value="elv">ELV</button>
+        <button type="button" class="btn" value="bitpay">Bitcoin</button> -->
+        <button type="button" class="btn" value="wire">Wire</button>
       </div>
     </div>
     <div id="payment-form">
@@ -96,7 +95,7 @@
             <label class="card-number-label">Credit Card #</label>
             <input class="card-number span3" type="text" size="20" ng-model="payment.card"
                    payments-format="card" payments-validate="card" placeholder="XXXX XXXX XXXX XXXX"
-                   ng-required="fop == 'cc'" bs-tooltip="tooltips.paymillInfo" data-placement="right"/>
+                   ng-required="fop == 'cc'" data-placement="right"/>
           </div>
         </div>
         <div class="controls controls-row">
@@ -104,14 +103,14 @@
             <label class="card-cvc-label">CVC</label>
             <input class="card-cvc span1" type="text" size="9" ng-model="payment.cvc"
                    payments-format="cvc" payments-validate="cvc" placeholder="XXXX"
-                   ng-required="fop == 'cc'" bs-tooltip="tooltips.paymillInfo" data-placement="right"/>
+                   ng-required="fop == 'cc'" data-placement="right"/>
           </div>
         </div>
         <div class="controls controls-row">
           <div class="span3">
             <label class="card-holdername-label">Name on Card</label>
             <input class="card-holdername span3" type="text" size="20" ng-model="payment.name"
-                   ng-required="fop == 'cc'" bs-tooltip="tooltips.paymillInfo" data-placement="right"/>
+                   ng-required="fop == 'cc'" data-placement="right"/>
           </div>
         </div>
         <div class="controls controls-row">
@@ -119,12 +118,14 @@
             <label class="card-expiry-label">Validity</label>
             <input class="card-expiry span2" type="text" size="7" placeholder="MM / YY" ng-model="payment.expiry"
                    payments-format="expiry" payments-validate="expiry"
-                   ng-required="fop == 'cc'" bs-tooltip="tooltips.paymillInfo" data-placement="right"/>
+                   ng-required="fop == 'cc'" data-placement="right"/>
           </div>
         </div>
         <div class="controls controls-row">
           <div class="span6 payment-provider-info">
-            Payment processing provided by <a href="https://paymill.com/" target="_new"><img src="/img/paymill-RGB.png" style="width: 60px; height: 11px"/></a>.
+            Payment processing provided by <a href="https://paymill.com/" target="_new"><img src="/img/paymill-RGB.png" style="width: 60px; height: 11px"/></a>.<br/>
+            Your credit card information is sent only<br/>
+            to PayMill through a secure connection.
           </div>
         </div>
       </div>
@@ -133,26 +134,28 @@
           <div class="span3">
             <label class="elv-holdername-label">Account Holder</label>
             <input class="elv-holdername span3" type="text" size="20" value="Max Mustermann" ng-model="payment.name"
-                   ng-required="fop == 'elv'" bs-tooltip="tooltips.paymillInfo" data-placement="right"/>
+                   ng-required="fop == 'elv'" data-placement="right"/>
           </div>
         </div>
         <div class="controls controls-row">
           <div class="span3">
             <label class="elv-account-label">Account #</label>
             <input class="elv-account span3" type="text" size="20" value="1234567890" ng-model="payment.kontonummer"
-                   ng-required="fop == 'elv'" bs-tooltip="tooltips.paymillInfo" data-placement="right"/>
+                   ng-required="fop == 'elv'" data-placement="right"/>
           </div>
         </div>
         <div class="controls controls-row">
           <div class="span3">
             <label class="elv-bankcode-label">Bank routing code (BLZ)</label>
             <input class="elv-bankcode span3" type="text" size="20" value="99999999" ng-model="payment.bankleitzahl"
-                   ng-required="fop == 'elv'" bs-tooltip="tooltips.paymillInfo" data-placement="right"/>
+                   ng-required="fop == 'elv'" data-placement="right"/>
           </div>
         </div>
         <div class="controls controls-row">
           <div class="span3 payment-provider-info">
-            Payment processing provided by <a href="https://paymill.com/" target="_new"><img src="/img/paymill-RGB.png" width="60" height="13"/></a>.
+            Payment processing provided by <a href="https://paymill.com/" target="_new"><img src="/img/paymill-RGB.png" width="60" height="13"/></a>.<br/>
+            Your bank account information is sent only<br/>
+            to PayMill through a secure connection.
           </div>
         </div>
       </div>

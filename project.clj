@@ -19,5 +19,5 @@
                  [enlive "1.1.4"]
                  [clj-fo "0.0.1"]
                  [com.draines/postal "1.11.0"]]
-  :jvm-opts ["-Djavax.net.ssl.trustStore=resources/cacerts"]
+  :jvm-opts ["-Djavax.net.ssl.trustStore=resources/cacerts" "-Xmx512m" "-Xms128m"]
   :main ehsm.core)
