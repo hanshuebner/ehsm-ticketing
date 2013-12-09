@@ -1,38 +1,202 @@
+html * {
+     font-family: 'Nunito',sans-serif;
+}
+
 label {
-    margin-top: 6px;
-    font-size: 13pt;
+     font-size: 13pt;
+     margin-top: 6px;
+}
+
+legend, hr {
+     border-color: #6B676B;
+}
+
+p {
+     text-align: center;
+}
+
+a {
+     color: #4CCC82;
+     font-family: 'Cabin Sketch',arial,serif;
+     text-decoration: none;
+}
+
+a:hover {
+     background: none repeat scroll 0% 0% #4CCC82;
+     color: #2B272B;
+     margin: -0.05em -0.15em;
+     padding: 0.05em 0.15em;
+     text-decoration: none;
+}
+
+.submit-button, .submit-button:focus {
+     background-color: #4CCC82;
+     background-image: none;
+     color: #F9FDEE;
+     text-shadow: none;
+}
+
+.submit-button:hover, .submit-button:active {
+     background-color: #4CCC82;
+     background-image: none;
+     color: #2B272B;
+     text-shadow: none;
+}
+
+.btn-primary.disabled,
+.btn-primary[disabled],
+fieldset[disabled] .btn-primary,
+.btn-primary.disabled:hover,
+.btn-primary[disabled]:hover,
+fieldset[disabled] .btn-primary:hover,
+.btn-primary.disabled:focus,
+.btn-primary[disabled]:focus,
+fieldset[disabled] .btn-primary:focus,
+.btn-primary.disabled:active,
+.btn-primary[disabled]:active,
+fieldset[disabled] .btn-primary:active,
+.btn-primary.disabled.active,
+.btn-primary[disabled].active,
+fieldset[disabled] .btn-primary.active {
+     background-color: gray;
+     border-color: black;
+     color: white;
 }
 
 .notice {
-    font-size: 14pt;
-    line-height: 20pt;
+     font-size: 14pt;
+     line-height: 20pt;
 }
 
-input.ng-invalid-required { background: #FFE4E1; }
+input.ng-invalid-required {
+     background: none repeat scroll 0% 0% #FFE4E1;
+}
 
 #payment-form {
-    height: 23em;
+    height: 25em;
     padding-top: 1em;
 }
 
 .payment-provider-info {
-    margin-top: 1em;
-    font-size: 10pt;
+     font-size: 10pt;
+     margin-top: 1em;
 }
 
 .total-amount {
-    margin-top: 1em;
-    margin-bottom: 2em;
+     margin-bottom: 2em;
+     margin-top: 1em;
 }
+
 .total-amount .amount {
-    font-size: 20pt;
-    background: white;
-    padding: 10px;
-    border: solid black 1px;
-    -moz-border-radius: 15px;
-    border-radius: 15px;
+     background: none repeat scroll 0% 0% white;
+     border-radius: 15px;
+     border: 1px solid #2B272B;
+     color: #2B272B;
+     font-size: 20pt;
+     padding: 10px;
 }
 
 label {
+     cursor: default;
+     font-size: 1.35em;
+     line-height: 1.3em;
+}
+
+body {
+     background: none repeat scroll 0% 0% #2B272B;
+     color: #F9FDEE;
+     font-family: 'Nunito',sans-serif;
+}
+
+.well {
+     background: none repeat scroll 0% 0% #F9FDEE;
+     color: #2B272B;
+     font-family: 'Nunito',sans-serif;
+     margin-left: auto;
+     margin-right: auto;
+     max-width: 60em;
+}
+
+.add-on {
+     color: #2B272B;
+}
+
+h1 {
+     font-family: 'Cabin Sketch',arial,serif;
+     font-size: 2.5em;
+     line-height: 3em;
+     text-align: center;
+}
+
+.tooltip-inner {
+     background: none repeat scroll 0% 0% #942445;
+     color: #F9FDEE;
+     font-size: 1.1em;
+}
+
+.tooltip.top .tooltip-arrow {
+     border-top-color: #942445;
+     border-width: 5px 5px 0px;
+     bottom: 0px;
+     left: 50%;
+     margin-left: -5px;
+}
+
+.tooltip.top-left .tooltip-arrow {
+     border-top-color: #942445;
+     border-width: 5px 5px 0px;
+     bottom: 0px;
+     left: 5px;
+}
+
+.tooltip.top-right .tooltip-arrow {
+     border-top-color: #942445;
+     border-width: 5px 5px 0px;
+     bottom: 0px;
+     right: 5px;
+}
+
+.tooltip.right .tooltip-arrow {
+     border-right-color: #942445;
+     border-width: 5px 5px 5px 0px;
+     left: 0px;
+     margin-top: -5px;
+     top: 50%;
+}
+
+.tooltip.left .tooltip-arrow {
+     border-left-color: #00FF00;
+     border-width: 5px 0px 5px 5px;
+     margin-top: -5px;
+     right: 0px;
+     top: 50%;
+}
+
+.tooltip.bottom .tooltip-arrow {
+     border-bottom-color: #942445;
+     border-width: 0px 5px 5px;
+     left: 50%;
+     margin-left: -5px;
+     top: 0px;
+}
+
+.tooltip.bottom-left .tooltip-arrow {
+     border-bottom-color: #942445;
+     border-width: 0px 5px 5px;
+     left: 5px;
+     top: 0px;
+}
+
+<<<<<<< HEAD
+label {
     cursor: default;
 }
+=======
+.tooltip.bottom-right .tooltip-arrow {
+     border-bottom-color: #942445;
+     border-width: 0px 5px 5px;
+     right: 5px;
+     top: 0px;
+}
+
+>>>>>>> f8d83f0aa2c41939a18931a7c913c1a2805e57a5
