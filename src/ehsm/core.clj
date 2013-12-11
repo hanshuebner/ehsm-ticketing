@@ -139,12 +139,15 @@ A ticket or EHSM has been sold!  Please see the attachments for details.
                    (not (early-available?)))
             {:status "ERROR"
              :message "early registration is closed"}
-            {:status "OK"
-             :ticket (tickets type)
-             :amount (* (+ (:price (tickets type)) donation) 100)
-             :description (str "EHSM " (:description (tickets type)) " Ticket"
-                               (when (and donation (pos? donation))
-                                 (str " + " donation " EUR donation")))}))))
+            (let [donation (and donation
+                                (read-string donation))]
+              {:status "OK"
+               :ticket (tickets type)
+               :donation donation
+               :amount (* (+ (:price (tickets type)) donation) 100)
+               :description (str "EHSM " (:description (tickets type)) " Ticket"
+                                 (when (and donation (pos? donation))
+                                   (str " + " donation " EUR donation")))})))))
 
 (defn wrap-prepare-order [handler]
   (fn [req]
