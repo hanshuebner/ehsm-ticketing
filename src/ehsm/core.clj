@@ -139,8 +139,10 @@ A ticket or EHSM has been sold!  Please see the attachments for details.
                    (not (early-available?)))
             {:status "ERROR"
              :message "early registration is closed"}
-            (let [donation (and donation
-                                (read-string donation))]
+            (let [donation (cond
+                            (string? donation) (read-string donation)
+                            (integer? donation) donation
+                            true nil)]
               {:status "OK"
                :ticket (tickets type)
                :donation donation
