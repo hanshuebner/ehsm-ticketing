@@ -24,11 +24,13 @@
       </div>
     </div>
     <label>We appreciate your additional donation to support EHSM:</label>
-    <div class="controls controls-row">
+    <div class="controls control-group">
       <div class="span3" bs-tooltip="tooltips.donation" data-placement="right">
-        <div class="input-append">
+        <div class="input-prepend">
           <span class="add-on">€</span>
-          <input class="span1" type="text" size="5"
+          <input class="span1"
+                 type="text"
+                 size="5"
                  name="donation"
                  ng-model="ticket.donation" data-placement="right" ng-change="updateTotal()"/>
         </div>
