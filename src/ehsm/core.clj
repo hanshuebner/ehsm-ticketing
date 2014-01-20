@@ -122,7 +122,7 @@ See you at DESY in June!
                         :body [{:type "text/plain"
                                 :content "Hi,
 
-A ticket or EHSM has been sold!  Please see the attachments for details.
+A ticket for EHSM has been sold!  Please see the attachments for details.
 
 -The EHSM Team"}
                                {:type :inline
