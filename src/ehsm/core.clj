@@ -16,16 +16,11 @@
             [clj-paymill.client :as paymill-client]
             [cheshire.core :as json]
             [ehsm.invoice :as invoice]
-            [postal.core :as postal]))
+            [postal.core :as postal]
+            [clojure.java.io :as io]
+            [clojure.edn :as edn]))
 
-(defonce default-port 7676)
-(defonce paymill-private-key (or (System/getenv "PAYMILL_PRIVATE_KEY")
-                                 (do (log/warn "warning, using compiled-in API test key")
-                                     "f0a966a7f4d01204c4712def21a9f73d")))
-
-(defonce smtp-host "localhost")
-(defonce email-from "EHSM 2014 Tickets <tickets@ehsm.eu>")
-(defonce admin-email-address "tickets@ehsm.eu")
+(def config (atom {}))
 
 (defonce tickets {"student" {:price 45 :description "Student / Unemployed"}
                   "regularEarly" {:price 70 :description "Regular (Early registration)"}
@@ -45,7 +40,7 @@
 
 (defn make-paymill-transaction [request]
   (log/info "creating paymill transaction, request is" (pr-str request))
-  (paymill-net/paymill-request paymill-private-key :post
+  (paymill-net/paymill-request (:paymill-private-key @config) :post
                                "transactions"
                                {"amount" (:amount request)
                                 "currency" (or (:currency request) "EUR")
@@ -95,8 +90,8 @@
 
 (defn send-invoice [order invoice-pdf]
   (log/info "sending invoice")
-  (postal/send-message ^{:host smtp-host}
-                       {:from email-from
+  (postal/send-message ^{:host (:smtp-host @config)}
+                       {:from (:email-from @config)
                         :to (:emailAddress order)
                         :subject "Invoice for your EHSM ticket"
                         :body [{:type "text/plain"
@@ -115,9 +110,9 @@ See you at DESY in June!
 
 (defn send-admin-notice [order json-pathname invoice-pdf-pathname]
   (log/info "sending admin notice")
-  (postal/send-message ^{:host smtp-host}
-                       {:from email-from
-                        :to admin-email-address
+  (postal/send-message ^{:host (:smtp-host @config)}
+                       {:from (:email-from @config)
+                        :to (:admin-email-address @config)
                         :subject "EHSM ticket sold"
                         :body [{:type "text/plain"
                                 :content "Hi,
@@ -223,6 +218,11 @@ Put \"EHSM\" and your invoice number into the reference field so that we can ass
       (ring-session/wrap-session)
       (handler/site)))
 
+(defn read-config [environment]
+  (let [config-file (str "config-" environment ".edn")]
+    (edn/read-string (slurp (or (io/resource config-file)
+                                (throw (Exception. (str "could not find configuration file " config-file " in resource path"))))))))
+
 (defonce stop-server-fn (atom nil))
 
 (defn stop-server []
@@ -230,12 +230,13 @@ Put \"EHSM\" and your invoice number into the reference field so that we can ass
     (@stop-server-fn))
   (reset! stop-server-fn nil))
 
-(defn start-server [& {:keys [user-directory port]}]
+(defn start-server [environment]
   (stop-server)
-  (when user-directory
-    (reset! user-directory user-directory))
+  (reset! config (read-config environment))
+  (println "Using configuration:")
+  (clojure.pprint/pprint @config)
   (reset! stop-server-fn (server/run-server (app)
-                                            {:port (or port default-port)})))
+                                            {:port (:http-port @config)})))
 
 (defn -main [& args]
   (start-server))
