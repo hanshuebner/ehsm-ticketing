@@ -207,8 +207,11 @@ Put \"EHSM\" and your invoice number into the reference field so that we can ass
 (defn client-config [req]
   {:status "200"
    :body (into {}
-               (for [[key value] (select-keys @config [:site :paymill-public-key :admin-email-address])]
+               (for [[key value] (select-keys @config [:site :conference-name :paymill-public-key :admin-email-address])]
                  [(keyword-to-camel-case key) value]))})
+
+(defn site-css [req]
+  (ring-response/redirect (str "/css/" (:site @config) ".css")))
 
 (defn not-found [req]
   {:status 404
@@ -222,6 +225,7 @@ Put \"EHSM\" and your invoice number into the reference field so that we can ass
   (POST "/pay-paymill" [] (wrap-prepare-order pay-paymill))
   (POST "/make-wire-invoice" [] (wrap-prepare-order make-wire-invoice))
   (GET "/client-config" [] client-config)
+  (GET "/css/site.css" [] site-css)
   ;; Enumerating all the AngularJS routes here is kind of cheesy, but
   ;; I'm too tired to find a more beautiful way right now.
   (GET "/" [] client-side-route)

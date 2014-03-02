@@ -2,11 +2,11 @@
 <html ng-app="tickets">
   <head>
     <meta charset="utf-8"/>
-    <title>Buy EHSM ticket</title>
+    <title>Buy {{config.conferenceName}} ticket</title>
     <script src="/js/jquery.min.js"></script>
     <link rel="stylesheet" href="/css/bootstrap.min.css"/>
     <link rel="stylesheet" href="/css/bootstrap-responsive.min.css"/>
-    <link rel="stylesheet" href="/css/ehsm.css"/>
+    <link rel="stylesheet" href="/css/site.css"/>
     <link href="//fonts.googleapis.com/css?family=Cabin+Sketch:bold" rel="stylesheet" type="text/css">
     <link href="//fonts.googleapis.com/css?family=Nunito" rel="stylesheet" type="text/css">
     <script type="text/javascript" src="https://bridge.paymill.com/"></script>
@@ -15,7 +15,7 @@
     <center style="padding-top: 2em;">
       <img src="/img/logo_web.png">
     </center>
-    <h1>Buy a Ticket for EHSM 2014</h1>
+    <h1>Buy a Ticket for {{config.conferenceName}}</h1>
     <div class="well" ng-view></div>
   </body>
   <script src="/js/angular.min.js"></script>
