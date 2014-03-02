@@ -24,14 +24,19 @@
 
 (defonce tickets {"student" {:price 45 :description "Student / Unemployed"}
                   "regularEarly" {:price 70 :description "Regular (Early registration)"}
-                  "regularLate" {:price 95 :description "Regular (Late registration)"}
+                  "regularSpecial" {:price 70 :description "Regular (14.03.2014 special)"}
+                  "regularLate" {:price 95 :description "Regular"}
                   "supporter" {:price 272 :description "Supporter"}
                   "goldSupporter" {:price 1337 :description "Gold Supporter"}})
 
 (defonce early-ticket-deadline (time-core/date-time 2014 2 2))
+(defonce special-ticket-day (time-core/date-midnight 2014 3 2))
 
 (defn early-available? []
   (not (time-core/after? (time-core/now) early-ticket-deadline)))
+
+(defn special-available? []
+  (= (time-core/today-at-midnight) special-ticket-day))
 
 (defn paymill-callback [req]
   (println "PAYMILL-CALLBACK" (:body req))
@@ -130,21 +135,29 @@ A ticket for EHSM has been sold!  Please see the attachments for details.
 (defn prepare-order [order]
   (into order 
         (let [{:keys [donation type]} order]
-          (if (and (= type "regularEarly")
-                   (not (early-available?)))
-            {:status "ERROR"
-             :message "early registration is closed"}
-            (let [donation (cond
-                            (string? donation) (read-string donation)
-                            (integer? donation) donation
-                            true nil)]
-              {:status "OK"
-               :ticket (tickets type)
-               :donation donation
-               :amount (* (+ (:price (tickets type)) donation) 100)
-               :description (str "EHSM " (:description (tickets type)) " Ticket"
-                                 (when (and donation (pos? donation))
-                                   (str " + " donation " EUR donation")))})))))
+          (cond
+           (and (= type "regularEarly")
+                (not (early-available?)))
+           {:status "ERROR"
+            :message "early registration is closed"}
+
+           (and (= type "regularSpecial")
+                (not (special-available?)))
+           {:status "ERROR"
+            :message "special ticket price not available today"}
+
+           true
+           (let [donation (cond
+                           (string? donation) (read-string donation)
+                           (integer? donation) donation
+                           true nil)]
+             {:status "OK"
+              :ticket (tickets type)
+              :donation donation
+              :amount (* (+ (:price (tickets type)) donation) 100)
+              :description (str "EHSM " (:description (tickets type)) " Ticket"
+                                (when (and donation (pos? donation))
+                                  (str " + " donation " EUR donation")))})))))
 
 (defn wrap-prepare-order [handler]
   (fn [req]

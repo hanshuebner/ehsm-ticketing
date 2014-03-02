@@ -24,11 +24,12 @@ angular
             $scope.fop = fop;
         }
 
+        $scope.specialTicketAvailable = moment().startOf('day').isSame('2014-03-14');
         $scope.earlyTicketAvailable = moment().isBefore('2014-02-02');
         $scope.tooltips = {
             studentTicket: "You will have to bring a valid student ID or unemployment confirmation to the conference",
             earlyTicket: "Available until February 1st, 2014",
-            lateTicket: "After February 1st, 2014",
+            specialTicket: "Available only on March 14th, 2014",
             supporterTicket: "We'll put your name onto the \"Supporters\" page on our web site",
             goldSupporterTicket: "We'll put your name and your logo onto the \"Supporters\" page on our web site and into our printed programme",
             participantName: "We're going to print this name onto your badge",
@@ -54,6 +55,7 @@ angular
         };
         var ticketPrices = { student: 45,
                              regularEarly: 70,
+                             regularSpecial: 70,
                              regularLate: 95,
                              supporter: 272,
                              goldSupporter: 1337 };
