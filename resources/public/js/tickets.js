@@ -1,5 +1,7 @@
+var PAYMILL_PUBLIC_KEY;
+
 angular
-    .module('tickets', ['angularPayments', '$strap.directives'])
+    .module('tickets', ['angularPayments', '$strap.directives', 'ngResource'])
     .config(function($routeProvider, $locationProvider) {
         $locationProvider.html5Mode(true);
         $routeProvider
@@ -9,8 +11,15 @@ angular
             .when('/registered', { templateUrl: 'partials/registered.html', })
             .otherwise({ templateUrl: '/partials/buy.html' });
     })
-    .controller('TicketsController', ['$scope', '$http', '$location', function ($scope, $http, $location) {
+    .factory('ConfigService', function ($resource) {
+    })
+    .controller('TicketsController', ['$scope', '$http', '$location', '$resource', function ($scope, $http, $location, $resource) {
         $location.path('/buy');
+
+        $resource('client-config').get(function (data) {
+            PAYMILL_PUBLIC_KEY = data.paymillPublicKey;
+            $scope.config = data;
+        });
 
         $scope.ticket = localStorage.ticket ? JSON.parse(localStorage.ticket) : { donation: 0, type: 'supporter'};
         $scope.payment = localStorage.payment ? JSON.parse(localStorage.payment) : {};
