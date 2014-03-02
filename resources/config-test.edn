@@ -1,0 +1,5 @@
+{:paymill-private-key "f0a966a7f4d01204c4712def21a9f73d"
+ :http-port 7676
+ :smtp-host "localhost"
+ :email-from "EHSM 2014 Tickets <tickets@ehsm.eu>"
+ :admin-email-address "hans.huebner@mail.com"}
