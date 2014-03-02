@@ -6,9 +6,11 @@
         <label class="radio" bs-tooltip="tooltips.studentTicket" data-placement="right">
           <input type="radio" ng-model="ticket.type" value="student" ng-click="updateTotal()">
           Student/unemployed € 45</label>
-        <label class="radio" bs-tooltip="tooltips.specialTicket" data-placement="right">
+        <label class="radio" bs-tooltip="tooltips.specialTicket" data-placement="right"
+               ng-hide="!specialTicketShown">
           <input type="radio" ng-model="ticket.type" value="regularSpecial"
-                 ng-disabled="!specialTicketAvailable" ng-click="updateTotal()">
+                 ng-disabled="!specialTicketAvailable"
+                 ng-click="updateTotal()">
           Regular (14/03 special) € 70</label>
         <label class="radio" bs-tooltip="tooltips.lateTicket" data-placement="right">
           <input type="radio" ng-model="ticket.type" value="regularLate"

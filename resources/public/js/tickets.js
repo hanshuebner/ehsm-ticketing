@@ -22,6 +22,7 @@ angular
             $scope.fop = fop;
         }
 
+        $scope.specialTicketShown = moment().startOf('day').isAfter('2014-03-10') && moment().startOf('day').isBefore('2014-03-15');
         $scope.specialTicketAvailable = moment().startOf('day').isSame('2014-03-14');
         $scope.earlyTicketAvailable = moment().isBefore('2014-02-02');
         $scope.tooltips = {
