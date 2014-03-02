@@ -1,5 +1,5 @@
 angular
-    .module('ehsm', ['angularPayments', '$strap.directives'])
+    .module('tickets', ['angularPayments', '$strap.directives'])
     .config(function($routeProvider, $locationProvider) {
         $locationProvider.html5Mode(true);
         $routeProvider
