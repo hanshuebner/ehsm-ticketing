@@ -1,4 +1,5 @@
 {:paymill-private-key "f0a966a7f4d01204c4712def21a9f73d"
+ :paymill-public-key "8585298099281237d892403846aedaf0"
  :http-port 7676
  :smtp-host "localhost"
  :email-from "EHSM 2014 Tickets <tickets@ehsm.eu>"

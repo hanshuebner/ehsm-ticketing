@@ -198,7 +198,12 @@ Exceptionally Hard and Soft Meeting e.V
 IBAN: DE54430609671157246900
 BIC: GENODEM1GLS
 
-Put \"EHSM\" and your invoice number into the reference field so that we can associate your payment correctly."))    
+Put \"EHSM\" and your invoice number into the reference field so that we can associate your payment correctly."))
+
+(defn paymill-public-key [req]
+  {:status "200"
+   :headers {"Content-Type" "text/javascript"}
+   :body (str "var PAYMILL_PUBLIC_KEY = '" (:paymill-public-key @config) "';\n")})
 
 (defn not-found [req]
   {:status 404
@@ -211,6 +216,7 @@ Put \"EHSM\" and your invoice number into the reference field so that we can ass
   (POST "/paymill-callback" [] paymill-callback)
   (POST "/pay-paymill" [] (wrap-prepare-order pay-paymill))
   (POST "/make-wire-invoice" [] (wrap-prepare-order make-wire-invoice))
+  (GET "/paymill-public-key.js" [] paymill-public-key)
   ;; Enumerating all the AngularJS routes here is kind of cheesy, but
   ;; I'm too tired to find a more beautiful way right now.
   (GET "/" [] client-side-route)
