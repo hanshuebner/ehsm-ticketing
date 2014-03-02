@@ -3,4 +3,4 @@
  :http-port 7676
  :smtp-host "localhost"
  :email-from "EHSM 2014 Tickets <tickets@ehsm.eu>"
- :admin-email-address "hans.huebner@mail.com"}
+ :admin-email-address "hans.huebner@gmail.com"}
