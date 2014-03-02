@@ -20,7 +20,7 @@
             [clojure.java.io :as io]
             [clojure.edn :as edn]))
 
-(def config (atom {}))
+(defonce config (atom {}))
 
 (defonce tickets {"student" {:price 45 :description "Student / Unemployed"}
                   "regularEarly" {:price 70 :description "Regular (Early registration)"}
@@ -200,10 +200,15 @@ BIC: GENODEM1GLS
 
 Put \"EHSM\" and your invoice number into the reference field so that we can associate your payment correctly."))
 
-(defn paymill-public-key [req]
+(defn keyword-to-camel-case [^String keyword]
+  (clojure.string/replace (name keyword) #"-(\w)" 
+                          #(clojure.string/upper-case (second %1))))
+
+(defn client-config [req]
   {:status "200"
-   :headers {"Content-Type" "text/javascript"}
-   :body (str "var PAYMILL_PUBLIC_KEY = '" (:paymill-public-key @config) "';\n")})
+   :body (into {}
+               (for [[key value] (select-keys @config [:paymill-public-key :admin-email-address])]
+                 [(keyword-to-camel-case key) value]))})
 
 (defn not-found [req]
   {:status 404
@@ -216,7 +221,7 @@ Put \"EHSM\" and your invoice number into the reference field so that we can ass
   (POST "/paymill-callback" [] paymill-callback)
   (POST "/pay-paymill" [] (wrap-prepare-order pay-paymill))
   (POST "/make-wire-invoice" [] (wrap-prepare-order make-wire-invoice))
-  (GET "/paymill-public-key.js" [] paymill-public-key)
+  (GET "/client-config" [] client-config)
   ;; Enumerating all the AngularJS routes here is kind of cheesy, but
   ;; I'm too tired to find a more beautiful way right now.
   (GET "/" [] client-side-route)
