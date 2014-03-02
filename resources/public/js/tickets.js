@@ -11,14 +11,19 @@ angular
             .when('/registered', { templateUrl: 'partials/registered.html', })
             .otherwise({ templateUrl: '/partials/buy.html' });
     })
-    .factory('ConfigService', function ($resource) {
-    })
-    .controller('TicketsController', ['$scope', '$http', '$location', '$resource', function ($scope, $http, $location, $resource) {
+    .directive('tickets', [ '$rootScope', function ($rootScope) {
+        return {
+            restrict: 'E',
+            templateUrl: 'partials/tickets-' + $rootScope.config.site + '.html'
+        };
+    }])
+    .controller('TicketsController', ['$scope', '$http', '$location', '$resource', '$rootScope',
+                                      function ($scope, $http, $location, $resource, $rootScope) {
         $location.path('/buy');
 
         $resource('client-config').get(function (data) {
             PAYMILL_PUBLIC_KEY = data.paymillPublicKey;
-            $scope.config = data;
+            $rootScope.config = data;
         });
 
         $scope.ticket = localStorage.ticket ? JSON.parse(localStorage.ticket) : { donation: 0, type: 'supporter'};

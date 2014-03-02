@@ -207,7 +207,7 @@ Put \"EHSM\" and your invoice number into the reference field so that we can ass
 (defn client-config [req]
   {:status "200"
    :body (into {}
-               (for [[key value] (select-keys @config [:paymill-public-key :admin-email-address])]
+               (for [[key value] (select-keys @config [:site :paymill-public-key :admin-email-address])]
                  [(keyword-to-camel-case key) value]))})
 
 (defn not-found [req]

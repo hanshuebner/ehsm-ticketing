@@ -1,0 +1,37 @@
+<div class="controls control-group">
+  <div class="span3">
+    <label class="radio" bs-tooltip="tooltips.studentTicket" data-placement="right">
+      <input type="radio" ng-model="ticket.type" value="student" ng-click="updateTotal()">
+      Student/unemployed € 45</label>
+    <label class="radio" bs-tooltip="tooltips.specialTicket" data-placement="right"
+           ng-hide="!specialTicketShown">
+      <input type="radio" ng-model="ticket.type" value="regularSpecial"
+             ng-disabled="!specialTicketAvailable"
+             ng-click="updateTotal()">
+      Regular (14/03 special) € 70</label>
+    <label class="radio" bs-tooltip="tooltips.lateTicket" data-placement="right">
+      <input type="radio" ng-model="ticket.type" value="regularLate"
+             ng-disabled="specialTicketAvailable" ng-click="updateTotal()">
+      Regular € 95</label>
+    <label class="radio" bs-tooltip="tooltips.supporterTicket" data-placement="right">
+      <input type="radio" ng-model="ticket.type" value="supporter"
+             checked ng-click="updateTotal()">
+      Supporter € 272</label>
+    <label class="radio" bs-tooltip="tooltips.goldSupporterTicket" data-placement="right">
+      <input type="radio" ng-model="ticket.type" value="goldSupporter" ng-click="updateTotal()">
+      Gold Supporter € 1337</label>
+  </div>
+</div>
+<label>We appreciate your additional donation to support EHSM:</label>
+<div class="controls control-group">
+  <div class="span3" bs-tooltip="tooltips.donation" data-placement="right">
+    <div class="input-prepend">
+      <span class="add-on">€</span>
+      <input class="span1"
+             type="text"
+             size="5"
+             name="donation"
+             ng-model="ticket.donation" data-placement="right" ng-change="updateTotal()"/>
+    </div>
+  </div>
+</div>
