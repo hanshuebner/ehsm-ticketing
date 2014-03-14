@@ -213,6 +213,9 @@ Put \"EHSM\" and your invoice number into the reference field so that we can ass
 (defn site-css [req]
   (ring-response/redirect (str "/css/" (:site @config) ".css")))
 
+(defn tickets-html [req]
+  (ring-response/redirect (str "/partials/tickets-" (:site @config) ".html")))
+
 (defn not-found [req]
   {:status 404
    :body "Not found."})
@@ -226,6 +229,7 @@ Put \"EHSM\" and your invoice number into the reference field so that we can ass
   (POST "/make-wire-invoice" [] (wrap-prepare-order make-wire-invoice))
   (GET "/client-config" [] client-config)
   (GET "/css/site.css" [] site-css)
+  (GET "/tickets.html" [] tickets-html)
   ;; Enumerating all the AngularJS routes here is kind of cheesy, but
   ;; I'm too tired to find a more beautiful way right now.
   (GET "/" [] client-side-route)

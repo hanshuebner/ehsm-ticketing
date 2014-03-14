@@ -14,7 +14,7 @@ angular
     .directive('tickets', [ '$rootScope', function ($rootScope) {
         return {
             restrict: 'E',
-            templateUrl: 'partials/tickets-' + $rootScope.config.site + '.html'
+            templateUrl: '/tickets.html'
         };
     }])
     .controller('TicketsController', ['$scope', '$http', '$location', '$resource', '$rootScope',
