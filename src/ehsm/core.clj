@@ -262,13 +262,16 @@ Put \"EHSM\" and your invoice number into the reference field so that we can ass
     (@stop-server-fn))
   (reset! stop-server-fn nil))
 
-(defn start-server [environment]
-  (stop-server)
-  (reset! config (read-config environment))
-  (println "Using configuration:")
-  (clojure.pprint/pprint @config)
-  (reset! stop-server-fn (server/run-server (app)
-                                            {:port (:http-port @config)})))
+(defn start-server
+  ([environment]
+    (stop-server)
+    (reset! config (read-config environment))
+    (println "Using configuration:")
+    (clojure.pprint/pprint @config)
+    (reset! stop-server-fn (server/run-server (app)
+                                              {:port (:http-port @config)})))
+  ([]
+    (start-server "production")))
 
 (defn -main [& args]
   (start-server))
